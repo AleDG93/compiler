@@ -1,0 +1,176 @@
+   0  $accept : line $end
+
+   1  line : expr '\n'
+
+   2  expr : expr '+' expr
+   3       | expr '-' expr
+   4       | expr '*' expr
+   5       | expr '/' expr
+   6       | NUM
+   7       | VAR '+' expr
+
+state 0
+	$accept : . line $end  (0)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	line  goto 3
+	expr  goto 4
+
+
+state 1
+	expr : NUM .  (6)
+
+	.  reduce 6
+
+
+state 2
+	expr : VAR . '+' expr  (7)
+
+	'+'  shift 5
+	.  error
+
+
+state 3
+	$accept : line . $end  (0)
+
+	$end  accept
+
+
+state 4
+	line : expr . '\n'  (1)
+	expr : expr . '+' expr  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr . '/' expr  (5)
+
+	'-'  shift 6
+	'+'  shift 7
+	'*'  shift 8
+	'/'  shift 9
+	'\n'  shift 10
+	.  error
+
+
+state 5
+	expr : VAR '+' . expr  (7)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	expr  goto 11
+
+
+state 6
+	expr : expr '-' . expr  (3)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	expr  goto 12
+
+
+state 7
+	expr : expr '+' . expr  (2)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	expr  goto 13
+
+
+state 8
+	expr : expr '*' . expr  (4)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	expr  goto 14
+
+
+state 9
+	expr : expr '/' . expr  (5)
+
+	NUM  shift 1
+	VAR  shift 2
+	.  error
+
+	expr  goto 15
+
+
+state 10
+	line : expr '\n' .  (1)
+
+	.  reduce 1
+
+
+state 11
+	expr : expr . '+' expr  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr . '/' expr  (5)
+	expr : VAR '+' expr .  (7)
+
+	'*'  shift 8
+	'/'  shift 9
+	'-'  reduce 7
+	'+'  reduce 7
+	'\n'  reduce 7
+
+
+state 12
+	expr : expr . '+' expr  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr '-' expr .  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr . '/' expr  (5)
+
+	'*'  shift 8
+	'/'  shift 9
+	'-'  reduce 3
+	'+'  reduce 3
+	'\n'  reduce 3
+
+
+state 13
+	expr : expr . '+' expr  (2)
+	expr : expr '+' expr .  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr . '/' expr  (5)
+
+	'*'  shift 8
+	'/'  shift 9
+	'-'  reduce 2
+	'+'  reduce 2
+	'\n'  reduce 2
+
+
+state 14
+	expr : expr . '+' expr  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr '*' expr .  (4)
+	expr : expr . '/' expr  (5)
+
+	.  reduce 4
+
+
+state 15
+	expr : expr . '+' expr  (2)
+	expr : expr . '-' expr  (3)
+	expr : expr . '*' expr  (4)
+	expr : expr . '/' expr  (5)
+	expr : expr '/' expr .  (5)
+
+	.  reduce 5
+
+
+9 terminals, 3 nonterminals
+8 grammar rules, 16 states
