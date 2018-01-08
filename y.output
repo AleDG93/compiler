@@ -1,176 +1,239 @@
-   0  $accept : line $end
+Rules useless in parser due to conflicts
 
-   1  line : expr '\n'
-
-   2  expr : expr '+' expr
-   3       | expr '-' expr
-   4       | expr '*' expr
-   5       | expr '/' expr
-   6       | NUM
-   7       | VAR '+' expr
-
-state 0
-	$accept : . line $end  (0)
-
-	NUM  shift 1
-	VAR  shift 2
-	.  error
-
-	line  goto 3
-	expr  goto 4
+    8 expr: VAR '+' NUM
 
 
-state 1
-	expr : NUM .  (6)
-
-	.  reduce 6
+State 12 conflicts: 5 reduce/reduce
 
 
-state 2
-	expr : VAR . '+' expr  (7)
+Grammar
 
-	'+'  shift 5
-	.  error
+    0 $accept: line $end
 
+    1 line: expr '\n'
 
-state 3
-	$accept : line . $end  (0)
-
-	$end  accept
-
-
-state 4
-	line : expr . '\n'  (1)
-	expr : expr . '+' expr  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr . '/' expr  (5)
-
-	'-'  shift 6
-	'+'  shift 7
-	'*'  shift 8
-	'/'  shift 9
-	'\n'  shift 10
-	.  error
+    2 expr: expr '+' expr
+    3     | expr '-' expr
+    4     | expr '*' expr
+    5     | expr '/' expr
+    6     | NUM
+    7     | VAR '+' expr
+    8     | VAR '+' NUM
 
 
-state 5
-	expr : VAR '+' . expr  (7)
+Terminals, with rules where they appear
 
-	NUM  shift 1
-	VAR  shift 2
-	.  error
-
-	expr  goto 11
-
-
-state 6
-	expr : expr '-' . expr  (3)
-
-	NUM  shift 1
-	VAR  shift 2
-	.  error
-
-	expr  goto 12
+$end (0) 0
+'\n' (10) 1
+'*' (42) 4
+'+' (43) 2 7 8
+'-' (45) 3
+'/' (47) 5
+error (256)
+NUM (258) 6 8
+VAR (259) 7 8
 
 
-state 7
-	expr : expr '+' . expr  (2)
+Nonterminals, with rules where they appear
 
-	NUM  shift 1
-	VAR  shift 2
-	.  error
-
-	expr  goto 13
-
-
-state 8
-	expr : expr '*' . expr  (4)
-
-	NUM  shift 1
-	VAR  shift 2
-	.  error
-
-	expr  goto 14
+$accept (10)
+    on left: 0
+line (11)
+    on left: 1, on right: 0
+expr (12)
+    on left: 2 3 4 5 6 7 8, on right: 1 2 3 4 5 7
 
 
-state 9
-	expr : expr '/' . expr  (5)
+State 0
 
-	NUM  shift 1
-	VAR  shift 2
-	.  error
+    0 $accept: . line $end
 
-	expr  goto 15
+    NUM  shift, and go to state 1
+    VAR  shift, and go to state 2
 
-
-state 10
-	line : expr '\n' .  (1)
-
-	.  reduce 1
+    line  go to state 3
+    expr  go to state 4
 
 
-state 11
-	expr : expr . '+' expr  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr . '/' expr  (5)
-	expr : VAR '+' expr .  (7)
+State 1
 
-	'*'  shift 8
-	'/'  shift 9
-	'-'  reduce 7
-	'+'  reduce 7
-	'\n'  reduce 7
+    6 expr: NUM .
+
+    $default  reduce using rule 6 (expr)
 
 
-state 12
-	expr : expr . '+' expr  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr '-' expr .  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr . '/' expr  (5)
+State 2
 
-	'*'  shift 8
-	'/'  shift 9
-	'-'  reduce 3
-	'+'  reduce 3
-	'\n'  reduce 3
+    7 expr: VAR . '+' expr
+    8     | VAR . '+' NUM
+
+    '+'  shift, and go to state 5
 
 
-state 13
-	expr : expr . '+' expr  (2)
-	expr : expr '+' expr .  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr . '/' expr  (5)
+State 3
 
-	'*'  shift 8
-	'/'  shift 9
-	'-'  reduce 2
-	'+'  reduce 2
-	'\n'  reduce 2
+    0 $accept: line . $end
+
+    $end  shift, and go to state 6
 
 
-state 14
-	expr : expr . '+' expr  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr '*' expr .  (4)
-	expr : expr . '/' expr  (5)
+State 4
 
-	.  reduce 4
+    1 line: expr . '\n'
+    2 expr: expr . '+' expr
+    3     | expr . '-' expr
+    4     | expr . '*' expr
+    5     | expr . '/' expr
 
-
-state 15
-	expr : expr . '+' expr  (2)
-	expr : expr . '-' expr  (3)
-	expr : expr . '*' expr  (4)
-	expr : expr . '/' expr  (5)
-	expr : expr '/' expr .  (5)
-
-	.  reduce 5
+    '-'   shift, and go to state 7
+    '+'   shift, and go to state 8
+    '*'   shift, and go to state 9
+    '/'   shift, and go to state 10
+    '\n'  shift, and go to state 11
 
 
-9 terminals, 3 nonterminals
-8 grammar rules, 16 states
+State 5
+
+    7 expr: VAR '+' . expr
+    8     | VAR '+' . NUM
+
+    NUM  shift, and go to state 12
+    VAR  shift, and go to state 2
+
+    expr  go to state 13
+
+
+State 6
+
+    0 $accept: line $end .
+
+    $default  accept
+
+
+State 7
+
+    3 expr: expr '-' . expr
+
+    NUM  shift, and go to state 1
+    VAR  shift, and go to state 2
+
+    expr  go to state 14
+
+
+State 8
+
+    2 expr: expr '+' . expr
+
+    NUM  shift, and go to state 1
+    VAR  shift, and go to state 2
+
+    expr  go to state 15
+
+
+State 9
+
+    4 expr: expr '*' . expr
+
+    NUM  shift, and go to state 1
+    VAR  shift, and go to state 2
+
+    expr  go to state 16
+
+
+State 10
+
+    5 expr: expr '/' . expr
+
+    NUM  shift, and go to state 1
+    VAR  shift, and go to state 2
+
+    expr  go to state 17
+
+
+State 11
+
+    1 line: expr '\n' .
+
+    $default  reduce using rule 1 (line)
+
+
+State 12
+
+    6 expr: NUM .
+    8     | VAR '+' NUM .
+
+    '-'       reduce using rule 6 (expr)
+    '-'       [reduce using rule 8 (expr)]
+    '+'       reduce using rule 6 (expr)
+    '+'       [reduce using rule 8 (expr)]
+    '*'       reduce using rule 6 (expr)
+    '*'       [reduce using rule 8 (expr)]
+    '/'       reduce using rule 6 (expr)
+    '/'       [reduce using rule 8 (expr)]
+    '\n'      reduce using rule 6 (expr)
+    '\n'      [reduce using rule 8 (expr)]
+    $default  reduce using rule 6 (expr)
+
+
+State 13
+
+    2 expr: expr . '+' expr
+    3     | expr . '-' expr
+    4     | expr . '*' expr
+    5     | expr . '/' expr
+    7     | VAR '+' expr .
+
+    '*'  shift, and go to state 9
+    '/'  shift, and go to state 10
+
+    $default  reduce using rule 7 (expr)
+
+
+State 14
+
+    2 expr: expr . '+' expr
+    3     | expr . '-' expr
+    3     | expr '-' expr .
+    4     | expr . '*' expr
+    5     | expr . '/' expr
+
+    '*'  shift, and go to state 9
+    '/'  shift, and go to state 10
+
+    $default  reduce using rule 3 (expr)
+
+
+State 15
+
+    2 expr: expr . '+' expr
+    2     | expr '+' expr .
+    3     | expr . '-' expr
+    4     | expr . '*' expr
+    5     | expr . '/' expr
+
+    '*'  shift, and go to state 9
+    '/'  shift, and go to state 10
+
+    $default  reduce using rule 2 (expr)
+
+
+State 16
+
+    2 expr: expr . '+' expr
+    3     | expr . '-' expr
+    4     | expr . '*' expr
+    4     | expr '*' expr .
+    5     | expr . '/' expr
+
+    $default  reduce using rule 4 (expr)
+
+
+State 17
+
+    2 expr: expr . '+' expr
+    3     | expr . '-' expr
+    4     | expr . '*' expr
+    5     | expr . '/' expr
+    5     | expr '/' expr .
+
+    $default  reduce using rule 5 (expr)
