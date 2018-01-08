@@ -8,7 +8,7 @@
 
 %union {
        double value;//value of an identifier of type NUM
-       char* var;//value of angular coefficient
+       double var;//value of angular coefficient
        }
 
 %token <value>  NUM
@@ -32,10 +32,10 @@ expr  : expr '+' expr  {$$ = $1 + $3;}
       | expr '*' expr  {$$ = $1 * $3;}
       | expr '/' expr  {$$ = $1 / $3;}
       | NUM            {$$ = $1;}
-      | VAR '+' expr {printf("Coefficient: %f \n", $1);$$ = $3;}
+   /*   | VAR '+' expr {printf("Coefficient: %f \n", $1);$$ = $3;}*/
       | VAR '+' NUM {printf("Coefficient: %f AND num: %f\n", $1,$3); exit(0);}
       ;
-
+/*
 term  : term '+' term  {$$ = $1 + $3;}
       | term '-' term  {$$ = $1 - $3;}
       | term '*' term  {$$ = $1 * $3;}
@@ -47,7 +47,7 @@ vari  : vari '+' vari  {$$ = $1 + $3;}
       | vari '*' vari  {$$ = $1 * $3;}
       | vari '/' vari  {$$ = $1 / $3;}
       | NUM            {$$ = $1;}
-      ;
+      ;*/
 %%
 
 #include "lex.yy.c"

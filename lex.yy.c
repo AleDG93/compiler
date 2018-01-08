@@ -505,7 +505,8 @@ char *yytext_ptr;
 #line 3 "lex-progetto.l"
 #include <stdlib.h>
 #include <string.h>
-#line 509 "lex.yy.c"
+#include <stdio.h>
+#line 510 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -723,10 +724,10 @@ YY_DECL
 		}
 
 	{
-#line 11 "lex-progetto.l"
+#line 12 "lex-progetto.l"
 
 
-#line 730 "lex.yy.c"
+#line 731 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -795,53 +796,54 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 13 "lex-progetto.l"
+#line 14 "lex-progetto.l"
 { /* skip blanks */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "lex-progetto.l"
+#line 16 "lex-progetto.l"
 {yylval.value = atof(yytext);
         	return NUM;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "lex-progetto.l"
-{yylval.var = strdup(yytext[strlen(yytext)-1] = 0);
+#line 19 "lex-progetto.l"
+{char* ooo = yytext; printf(ooo); 
+yylval.var = atof(ooo);
 			return VAR;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 21 "lex-progetto.l"
+#line 23 "lex-progetto.l"
 {return '+';}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 22 "lex-progetto.l"
+#line 24 "lex-progetto.l"
 {return '-';}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 23 "lex-progetto.l"
+#line 25 "lex-progetto.l"
 {return '*';}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 24 "lex-progetto.l"
+#line 26 "lex-progetto.l"
 {return '/';}
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 25 "lex-progetto.l"
+#line 27 "lex-progetto.l"
 {return '\n';}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 27 "lex-progetto.l"
+#line 29 "lex-progetto.l"
 ECHO;
 	YY_BREAK
-#line 845 "lex.yy.c"
+#line 847 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1854,7 +1856,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 27 "lex-progetto.l"
+#line 29 "lex-progetto.l"
 
 
 

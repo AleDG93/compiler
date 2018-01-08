@@ -120,7 +120,7 @@ union YYSTYPE
 #line 9 "yacc-progetto.y" /* yacc.c:355  */
 
        double value;//value of an identifier of type NUM
-       char* var;//value of angular coefficient
+       double var;//value of angular coefficient
        
 
 #line 127 "y.tab.c" /* yacc.c:355  */
@@ -382,16 +382,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   18
+#define YYLAST   15
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  3
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  9
+#define YYNRULES  8
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  18
+#define YYNSTATES  17
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -437,7 +437,7 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    28,    28,    30,    31,    32,    33,    34,    35,    36
+       0,    28,    28,    30,    31,    32,    33,    34,    36
 };
 #endif
 
@@ -474,8 +474,8 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       8,    -6,    12,    15,     1,    10,    -6,     8,     8,     8,
-       8,    -6,    -6,     9,     9,     9,    -6,    -6
+       6,    -6,     7,    14,    -5,    12,    -6,     6,     6,     6,
+       6,    -6,    -6,     4,     4,    -6,    -6
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -484,13 +484,13 @@ static const yytype_int8 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     7,     0,     0,     0,     0,     1,     0,     0,     0,
-       0,     2,     7,     8,     4,     3,     5,     6
+       0,     2,     8,     4,     3,     5,     6
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -5
+      -6,    -6,    -2
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -504,14 +504,14 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      13,     0,    14,    15,    16,    17,     7,     8,     9,    10,
-      11,     1,     2,    12,     2,     6,     9,    10,     5
+       7,     8,     9,    10,    11,    13,    14,    15,    16,     1,
+       2,     9,    10,     5,     6,    12
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-       5,    -1,     7,     8,     9,    10,     5,     6,     7,     8,
-       9,     3,     4,     3,     4,     0,     7,     8,     6
+       5,     6,     7,     8,     9,     7,     8,     9,    10,     3,
+       4,     7,     8,     6,     0,     3
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -519,19 +519,19 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,     3,     4,    11,    12,     6,     0,     5,     6,     7,
-       8,     9,     3,    12,    12,    12,    12,    12
+       8,     9,     3,    12,    12,    12,    12
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    10,    11,    12,    12,    12,    12,    12,    12,    12
+       0,    10,    11,    12,    12,    12,    12,    12,    12
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     3,     3,     3,     3,     1,     3,     3
+       0,     2,     2,     3,     3,     3,     3,     1,     3
 };
 
 
@@ -1244,19 +1244,13 @@ yyreduce:
     break;
 
   case 8:
-#line 35 "yacc-progetto.y" /* yacc.c:1646  */
-    {printf("Coefficient: %f \n", (yyvsp[-2].var));(yyval.value) = (yyvsp[0].value);}
+#line 36 "yacc-progetto.y" /* yacc.c:1646  */
+    {printf("Coefficient: %f AND num: %f\n", (yyvsp[-2].var),(yyvsp[0].value)); exit(0);}
 #line 1250 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 9:
-#line 36 "yacc-progetto.y" /* yacc.c:1646  */
-    {printf("Coefficient: %f AND num: %f\n", (yyvsp[-2].var),(yyvsp[0].value)); exit(0);}
-#line 1256 "y.tab.c" /* yacc.c:1646  */
-    break;
 
-
-#line 1260 "y.tab.c" /* yacc.c:1646  */
+#line 1254 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1484,7 +1478,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 50 "yacc-progetto.y" /* yacc.c:1906  */
+#line 51 "yacc-progetto.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"

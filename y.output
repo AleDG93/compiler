@@ -1,11 +1,3 @@
-Rules useless in parser due to conflicts
-
-    8 expr: VAR '+' NUM
-
-
-State 12 conflicts: 5 reduce/reduce
-
-
 Grammar
 
     0 $accept: line $end
@@ -17,8 +9,7 @@ Grammar
     4     | expr '*' expr
     5     | expr '/' expr
     6     | NUM
-    7     | VAR '+' expr
-    8     | VAR '+' NUM
+    7     | VAR '+' NUM
 
 
 Terminals, with rules where they appear
@@ -26,12 +17,12 @@ Terminals, with rules where they appear
 $end (0) 0
 '\n' (10) 1
 '*' (42) 4
-'+' (43) 2 7 8
+'+' (43) 2 7
 '-' (45) 3
 '/' (47) 5
 error (256)
-NUM (258) 6 8
-VAR (259) 7 8
+NUM (258) 6 7
+VAR (259) 7
 
 
 Nonterminals, with rules where they appear
@@ -41,7 +32,7 @@ $accept (10)
 line (11)
     on left: 1, on right: 0
 expr (12)
-    on left: 2 3 4 5 6 7 8, on right: 1 2 3 4 5 7
+    on left: 2 3 4 5 6 7, on right: 1 2 3 4 5
 
 
 State 0
@@ -64,8 +55,7 @@ State 1
 
 State 2
 
-    7 expr: VAR . '+' expr
-    8     | VAR . '+' NUM
+    7 expr: VAR . '+' NUM
 
     '+'  shift, and go to state 5
 
@@ -94,13 +84,9 @@ State 4
 
 State 5
 
-    7 expr: VAR '+' . expr
-    8     | VAR '+' . NUM
+    7 expr: VAR '+' . NUM
 
     NUM  shift, and go to state 12
-    VAR  shift, and go to state 2
-
-    expr  go to state 13
 
 
 State 6
@@ -117,7 +103,7 @@ State 7
     NUM  shift, and go to state 1
     VAR  shift, and go to state 2
 
-    expr  go to state 14
+    expr  go to state 13
 
 
 State 8
@@ -127,7 +113,7 @@ State 8
     NUM  shift, and go to state 1
     VAR  shift, and go to state 2
 
-    expr  go to state 15
+    expr  go to state 14
 
 
 State 9
@@ -137,7 +123,7 @@ State 9
     NUM  shift, and go to state 1
     VAR  shift, and go to state 2
 
-    expr  go to state 16
+    expr  go to state 15
 
 
 State 10
@@ -147,7 +133,7 @@ State 10
     NUM  shift, and go to state 1
     VAR  shift, and go to state 2
 
-    expr  go to state 17
+    expr  go to state 16
 
 
 State 11
@@ -159,37 +145,12 @@ State 11
 
 State 12
 
-    6 expr: NUM .
-    8     | VAR '+' NUM .
-
-    '-'       reduce using rule 6 (expr)
-    '-'       [reduce using rule 8 (expr)]
-    '+'       reduce using rule 6 (expr)
-    '+'       [reduce using rule 8 (expr)]
-    '*'       reduce using rule 6 (expr)
-    '*'       [reduce using rule 8 (expr)]
-    '/'       reduce using rule 6 (expr)
-    '/'       [reduce using rule 8 (expr)]
-    '\n'      reduce using rule 6 (expr)
-    '\n'      [reduce using rule 8 (expr)]
-    $default  reduce using rule 6 (expr)
-
-
-State 13
-
-    2 expr: expr . '+' expr
-    3     | expr . '-' expr
-    4     | expr . '*' expr
-    5     | expr . '/' expr
-    7     | VAR '+' expr .
-
-    '*'  shift, and go to state 9
-    '/'  shift, and go to state 10
+    7 expr: VAR '+' NUM .
 
     $default  reduce using rule 7 (expr)
 
 
-State 14
+State 13
 
     2 expr: expr . '+' expr
     3     | expr . '-' expr
@@ -203,7 +164,7 @@ State 14
     $default  reduce using rule 3 (expr)
 
 
-State 15
+State 14
 
     2 expr: expr . '+' expr
     2     | expr '+' expr .
@@ -217,7 +178,7 @@ State 15
     $default  reduce using rule 2 (expr)
 
 
-State 16
+State 15
 
     2 expr: expr . '+' expr
     3     | expr . '-' expr
@@ -228,7 +189,7 @@ State 16
     $default  reduce using rule 4 (expr)
 
 
-State 17
+State 16
 
     2 expr: expr . '+' expr
     3     | expr . '-' expr

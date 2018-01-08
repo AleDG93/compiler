@@ -61,7 +61,7 @@ union YYSTYPE
 #line 9 "yacc-progetto.y" /* yacc.c:1909  */
 
        double value;//value of an identifier of type NUM
-       char* var;//value of angular coefficient
+       double var;//value of angular coefficient
        
 
 #line 68 "y.tab.h" /* yacc.c:1909  */
