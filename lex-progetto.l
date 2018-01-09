@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+
 %}
 
 DIGIT    [0-9]
@@ -16,8 +18,7 @@ VAR		 {NUM}+[xX]
 {NUM}    {yylval.value = atof(yytext);
         	return NUM;}
 
-{VAR}	{char* ooo = yytext; printf(ooo);
-yylval.var = atof(ooo);
+{VAR}	{char* input = yytext; printf("%s\n", input); yylval.var = atof(input);
 			return VAR;}
 
 "+"     {return '+';}
