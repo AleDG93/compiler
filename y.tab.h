@@ -62,9 +62,10 @@ union YYSTYPE
 
        double value;//value of an identifier of type NUM
        double var;//value of angular coefficient
+       double line;
        
 
-#line 68 "y.tab.h" /* yacc.c:1909  */
+#line 69 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
