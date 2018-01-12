@@ -1,29 +1,21 @@
 %{
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 %}
 
 
 %union {
-       double value;//value of an identifier of type NUM
-       double var;//value of angular coefficient
-       double line;
+	char* var; //Name of the variable
+	char* val; //Value of the variable
        }
 
-%token <value>  NUM
 %token <var> VAR
+%token <val> VAL
+%token print
 
-
-%type <value> expr
-%type <var> vari
-%type <line> line
 /* %type <value> line */
-
-
-%left '-' '+'
-%left '*' '/'
 
 
 %start line
@@ -31,31 +23,10 @@
 %%
 
 
-line  : vari '+' expr  {printf("Result: %f and %f\n", $1, $3);}
-      | vari '-' expr  {printf("Result: %f and %f\n", $1, $3);}
-      | vari '*' expr  {printf("Result: %f and %f\n", $1, $3);}
-      | vari '/' expr  {printf("Result: %f and %f\n", $1, $3);}
-      | expr '+' vari  {printf("Result: %f and %f\n", $1, $3);}
-      | expr '-' vari  {printf("Result: %f and %f\n", $1, $3);}
-      | expr '*' vari  {printf("Result: %f and %f\n", $1, $3);}
-      | expr '/' vari  {printf("Result: %f and %f\n", $1, $3);}
-	  | expr '\n'      {printf("Result: %f\n", $1); exit(0);}     
-      | vari '\n'      {printf("Result: %f\n", $1); exit(0);}   
+line  : VAR '=' VAL {printf("Assign: %s to %s", $1,$3);}
+      | print '(' VAR ')' {printf("Printing: %s", $3);}
       ;
       
-expr  : expr '+' expr  {$$ = $1 + $3;}
-      | expr '-' expr  {$$ = $1 - $3;}
-      | expr '*' expr  {$$ = $1 * $3;}
-      | expr '/' expr  {$$ = $1 / $3;}
-      | NUM            {$$ = $1;}
-      ;
-
-vari  : vari '+' vari  {$$ = $1 + $3;}
-      | vari '-' vari  {$$ = $1 - $3;}
-      | vari '*' vari  {$$ = $1 * $3;}
-      | vari '/' vari  {$$ = $1 / $3;}
-      | VAR            {$$ = $1;}
-      ;
 
 %%
 

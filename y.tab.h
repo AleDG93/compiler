@@ -45,13 +45,15 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUM = 258,
-    VAR = 259
+    VAR = 258,
+    VAL = 259,
+    print = 260
   };
 #endif
 /* Tokens.  */
-#define NUM 258
-#define VAR 259
+#define VAR 258
+#define VAL 259
+#define print 260
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -60,12 +62,11 @@ union YYSTYPE
 {
 #line 9 "yacc-progetto.y" /* yacc.c:1909  */
 
-       double value;//value of an identifier of type NUM
-       double var;//value of angular coefficient
-       double line;
+	char* var; //Name of the variable
+	char* val; //Value of the variable
        
 
-#line 69 "y.tab.h" /* yacc.c:1909  */
+#line 70 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
