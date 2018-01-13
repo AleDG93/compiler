@@ -16,7 +16,7 @@ typedef struct symbol_table {
 symb * head = NULL;
 
 char* getVarValue(char* var);
-void updateSymbolVal(char * val, char * var);
+void updateSymbolVal(char * var, char * val);
 
 
 %}
@@ -25,7 +25,7 @@ void updateSymbolVal(char * val, char * var);
 %union {
 	char* var; //Name of the variable
 	char* val; //Value of the variable
-
+	char* str;
        }
 
 %token <var> VAR
@@ -35,23 +35,23 @@ void updateSymbolVal(char * val, char * var);
 
 /* %type <value> line */
 %type <var> line expr 
-
+%type <str> assign
 
 %start line
 
 %%
 
 
-line	: assign ';'		{;}
-	| exit_command		{exit(EXIT_SUCCESS);}
-	| print expr ';'	{printf("Printing: %s\n", $2);}
-	| line assign ';'	{;}
-	| line print expr ';'	{printf("Printing %s\n", $3);}
-	| line exit_command	{exit(EXIT_SUCCESS);}
+line	: assign ';'			{;}
+	| exit_command			{exit(EXIT_SUCCESS);}
+	| print '(' expr ')' ';'	{;}
+	| line assign ';'		{;}
+	| line print '(' expr ')' ';'	{;}
+	| line exit_command		{exit(EXIT_SUCCESS);}
+	;
 
-
-assign	: VAR '=' expr		{updateSymbolTable($1, $3);}
-	;			
+assign	: expr '=' expr		{printf("Distinguish assign: %s + %s\n",$1,$3);updateSymbolTable($1, $3);}
+	;		
 
 expr	: VAL			{$$ = $1;}
 	| VAR			{$$ = getVarValue($1);}
@@ -69,11 +69,21 @@ line  : VAR '=' VAL {printf("Assign: %s to %s", $1,$3);}
 
 char* getVarValue(char * var){
 
+	symb * current = head;
+
+	printf("\n-----------------\n");
+	while (current != NULL && current->var != var) {
+		printf("CURRENT-VAR: %s\nCURRENT-VAL: %s\n", current->var, current->val);
+		current = current->next;
+	}
+
+	printf("\n-----------------\n");
 	return "ciao";
 }
  
-void updateSymbolTable(char * val, char * var) {
+void updateSymbolTable(char * var, char * val) {
     
+	printf("VAR: %s and VAL: %s\n", var,val);
 	symb * current = head;
 	/* Check if variable already exists */
 	while (current->next != NULL && current->var != var) {
@@ -85,9 +95,12 @@ void updateSymbolTable(char * val, char * var) {
 	} else {
 	/* If var does not exist add a new value */
 		current->next = malloc(sizeof(symb));
+		current->next->var = var;
 		current->next->val = val;
 		current->next->next = NULL;
 	}
+
+
 }
 
 int main (void) {
@@ -104,12 +117,7 @@ int main (void) {
 	head->val = "head";
 	head->next = NULL;
 
-	symb * current = head;
-
-	while (current != NULL) {
-		printf("%s\n", current->val);
-		current = current->next;
-	}
+	
 
 	return yyparse ( );
 }

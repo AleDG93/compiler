@@ -1,4 +1,6 @@
 ab -> casa
+cd -> giardino
+ef -> cuscino
 tellMe(ab)
 exit
-
+	

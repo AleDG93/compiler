@@ -12,7 +12,7 @@ WORD	 [a-zA-Z]+
 DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
 VAR	 {WORD}[{WORD}|{NUM}]*
-/*VAL	 ->[ ]?{VAR}*/
+VAL	 [ ]?{VAR}
 %%
 
 [ ]		{ /* skip blanks */ }
@@ -20,12 +20,15 @@ VAR	 {WORD}[{WORD}|{NUM}]*
 "tellMe" {return print;}
 "exit"	 {return exit_command;}
 
-{VAR}	{char* input = yytext; printf("\n\nVAR: %s\n\n", input); yylval.var = input;
+{VAR}	{char* input = yytext; yylval.var = input;printf("\n\nVAR: %s\n\n", input); 
 			return VAR;}
 
-	/* {VAL}	{char* input = yytext; printf("\n\nVAL: %s\n\n", input); yylval.val = input;
+{VAL}	{char* input = yytext; yylval.val = input;printf("\n\nVAL: %s\n\n", input); 
 			return VAL;}
-*/
+
+
+"("	{return '(';}
+")"	{return ')';}
 "->"	{return '=';}
 "+"     {return '+';}
 "-"     {return '-';}

@@ -66,7 +66,7 @@ union YYSTYPE
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable
-
+	char* str;
        
 
 #line 73 "y.tab.h" /* yacc.c:1909  */
