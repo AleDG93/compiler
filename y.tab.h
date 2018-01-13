@@ -47,26 +47,29 @@ extern int yydebug;
   {
     VAR = 258,
     VAL = 259,
-    print = 260
+    print = 260,
+    exit_command = 261
   };
 #endif
 /* Tokens.  */
 #define VAR 258
 #define VAL 259
 #define print 260
+#define exit_command 261
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 9 "yacc-progetto.y" /* yacc.c:1909  */
+#line 24 "yacc-progetto.y" /* yacc.c:1909  */
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable
+	struct symb;
        
 
-#line 70 "y.tab.h" /* yacc.c:1909  */
+#line 73 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

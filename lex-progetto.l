@@ -18,6 +18,7 @@ VAL	 ->[ ]?{VAR}
 [ ]		{ /* skip blanks */ }
 
 "tellMe" {return print;}
+"exit"	 {return exit_command;}
 
 {VAR}	{char* input = yytext; printf("\n\nVAR: %s\n\n", input); yylval.var = input;
 			return VAR;}

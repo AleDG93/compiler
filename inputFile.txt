@@ -1,3 +1,4 @@
-ab -> ciao
-cd -> weila
+ab -> casa
 tellMe(ab)
+exit
+
