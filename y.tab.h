@@ -62,7 +62,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 24 "yacc-progetto.y" /* yacc.c:1909  */
+#line 25 "yacc-progetto.y" /* yacc.c:1909  */
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable

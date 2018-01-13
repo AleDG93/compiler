@@ -13,9 +13,10 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+symb * head = NULL;
 
 char* getVarValue(char* var);
-void updateSymbolVal(symb * head, char * val, char * var);
+void updateSymbolVal(char * val, char * var);
 
 
 %}
@@ -41,15 +42,15 @@ void updateSymbolVal(symb * head, char * val, char * var);
 %%
 
 
-line	: assign '\n'		{;}
+line	: assign ';'		{;}
 	| exit_command		{exit(EXIT_SUCCESS);}
-	| print expr '\n'	{printf("Printing: %s\n", $2);}
-	| line assign '\n'	{;}
-	| line print expr '\n'	{printf("Printing %s\n", $3);}
+	| print expr ';'	{printf("Printing: %s\n", $2);}
+	| line assign ';'	{;}
+	| line print expr ';'	{printf("Printing %s\n", $3);}
 	| line exit_command	{exit(EXIT_SUCCESS);}
 
 
-assign	: VAR '=' expr		{updateSymbolTable("head", $1, $3);}
+assign	: VAR '=' expr		{updateSymbolTable($1, $3);}
 	;			
 
 expr	: VAL			{$$ = $1;}
@@ -71,7 +72,7 @@ char* getVarValue(char * var){
 	return "ciao";
 }
  
-void updateSymbolTable(symb * head, char * val, char * var) {
+void updateSymbolTable(char * val, char * var) {
     
 	symb * current = head;
 	/* Check if variable already exists */
@@ -93,7 +94,7 @@ int main (void) {
 	
 	/* init symbol table */
 
-	symb * head = NULL;
+	
 	head = malloc(sizeof(symb));
 	if (head == NULL) {
 	    return 1;
@@ -102,6 +103,13 @@ int main (void) {
 	head->var = "head";
 	head->val = "head";
 	head->next = NULL;
+
+	symb * current = head;
+
+	while (current != NULL) {
+		printf("%s\n", current->val);
+		current = current->next;
+	}
 
 	return yyparse ( );
 }

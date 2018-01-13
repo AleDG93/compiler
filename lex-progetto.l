@@ -12,7 +12,7 @@ WORD	 [a-zA-Z]+
 DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
 VAR	 {WORD}[{WORD}|{NUM}]*
-VAL	 ->[ ]?{VAR}
+/*VAL	 ->[ ]?{VAR}*/
 %%
 
 [ ]		{ /* skip blanks */ }
@@ -22,15 +22,17 @@ VAL	 ->[ ]?{VAR}
 
 {VAR}	{char* input = yytext; printf("\n\nVAR: %s\n\n", input); yylval.var = input;
 			return VAR;}
-{VAL}	{char* input = yytext; printf("\n\nVAL: %s\n\n", input); yylval.var = input;
-			return VAL;}
 
+	/* {VAL}	{char* input = yytext; printf("\n\nVAL: %s\n\n", input); yylval.val = input;
+			return VAL;}
+*/
 "->"	{return '=';}
 "+"     {return '+';}
 "-"     {return '-';}
 "*"     {return '*';}
 "/"     {return '/';}
 \n      {return ';';}
+[ \t\n]	;
 
 
 %%

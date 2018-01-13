@@ -78,13 +78,14 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+symb * head = NULL;
 
 char* getVarValue(char* var);
-void updateSymbolVal(symb * head, char * val, char * var);
+void updateSymbolVal(char * val, char * var);
 
 
 
-#line 88 "y.tab.c" /* yacc.c:339  */
+#line 89 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -136,14 +137,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 24 "yacc-progetto.y" /* yacc.c:355  */
+#line 25 "yacc-progetto.y" /* yacc.c:355  */
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable
 
        
 
-#line 147 "y.tab.c" /* yacc.c:355  */
+#line 148 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -160,7 +161,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 164 "y.tab.c" /* yacc.c:358  */
+#line 165 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -426,11 +427,11 @@ union yyalloc
 static const yytype_uint8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       7,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     7,
        2,     8,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -458,8 +459,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    44,    44,    45,    46,    47,    48,    49,    52,    55,
-      56
+       0,    45,    45,    46,    47,    48,    49,    50,    53,    56,
+      57
 };
 #endif
 
@@ -469,7 +470,7 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "VAR", "VAL", "print", "exit_command",
-  "'\\n'", "'='", "$accept", "line", "assign", "expr", YY_NULLPTR
+  "';'", "'='", "$accept", "line", "assign", "expr", YY_NULLPTR
 };
 #endif
 
@@ -478,7 +479,7 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,    10,    61
+       0,   256,   257,   258,   259,   260,   261,    59,    61
 };
 # endif
 
@@ -1232,61 +1233,61 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 44 "yacc-progetto.y" /* yacc.c:1646  */
+#line 45 "yacc-progetto.y" /* yacc.c:1646  */
     {;}
-#line 1238 "y.tab.c" /* yacc.c:1646  */
+#line 1239 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 45 "yacc-progetto.y" /* yacc.c:1646  */
+#line 46 "yacc-progetto.y" /* yacc.c:1646  */
     {exit(EXIT_SUCCESS);}
-#line 1244 "y.tab.c" /* yacc.c:1646  */
+#line 1245 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 46 "yacc-progetto.y" /* yacc.c:1646  */
+#line 47 "yacc-progetto.y" /* yacc.c:1646  */
     {printf("Printing: %s\n", (yyvsp[-1].var));}
-#line 1250 "y.tab.c" /* yacc.c:1646  */
+#line 1251 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 47 "yacc-progetto.y" /* yacc.c:1646  */
+#line 48 "yacc-progetto.y" /* yacc.c:1646  */
     {;}
-#line 1256 "y.tab.c" /* yacc.c:1646  */
+#line 1257 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 48 "yacc-progetto.y" /* yacc.c:1646  */
+#line 49 "yacc-progetto.y" /* yacc.c:1646  */
     {printf("Printing %s\n", (yyvsp[-1].var));}
-#line 1262 "y.tab.c" /* yacc.c:1646  */
+#line 1263 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 49 "yacc-progetto.y" /* yacc.c:1646  */
+#line 50 "yacc-progetto.y" /* yacc.c:1646  */
     {exit(EXIT_SUCCESS);}
-#line 1268 "y.tab.c" /* yacc.c:1646  */
+#line 1269 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 52 "yacc-progetto.y" /* yacc.c:1646  */
-    {updateSymbolTable("head", (yyvsp[-2].var), (yyvsp[0].var));}
-#line 1274 "y.tab.c" /* yacc.c:1646  */
+#line 53 "yacc-progetto.y" /* yacc.c:1646  */
+    {updateSymbolTable((yyvsp[-2].var), (yyvsp[0].var));}
+#line 1275 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 55 "yacc-progetto.y" /* yacc.c:1646  */
+#line 56 "yacc-progetto.y" /* yacc.c:1646  */
     {(yyval.var) = (yyvsp[0].val);}
-#line 1280 "y.tab.c" /* yacc.c:1646  */
+#line 1281 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 56 "yacc-progetto.y" /* yacc.c:1646  */
+#line 57 "yacc-progetto.y" /* yacc.c:1646  */
     {(yyval.var) = getVarValue((yyvsp[0].var));}
-#line 1286 "y.tab.c" /* yacc.c:1646  */
+#line 1287 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1290 "y.tab.c" /* yacc.c:1646  */
+#line 1291 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1514,15 +1515,20 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 67 "yacc-progetto.y" /* yacc.c:1906  */
+#line 68 "yacc-progetto.y" /* yacc.c:1906  */
 
 
 char* getVarValue(char * var){
+	
+	symb * current = head;
 
-	return "ciao";
+	while (current->var != var) {
+		current = current->next;
+	}
+	return current->val;
 }
  
-void updateSymbolTable(symb * head, char * val, char * var) {
+void updateSymbolTable(char * val, char * var) {
     
 	symb * current = head;
 	/* Check if variable already exists */
@@ -1544,7 +1550,7 @@ int main (void) {
 	
 	/* init symbol table */
 
-	symb * head = NULL;
+	
 	head = malloc(sizeof(symb));
 	if (head == NULL) {
 	    return 1;
@@ -1553,6 +1559,13 @@ int main (void) {
 	head->var = "head";
 	head->val = "head";
 	head->next = NULL;
+
+	symb * current = head;
+
+	while (current != NULL) {
+		printf("%s\n", current->val);
+		current = current->next;
+	}
 
 	return yyparse ( );
 }
