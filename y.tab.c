@@ -71,9 +71,6 @@
 
 void yyerror (char *s);
 
-char * getVarValue(char var);
-void updateSymbolVal(symb * symbol, char * val, char * var);
-
 typedef struct symbol_table {
 
     char * var;
@@ -81,6 +78,9 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+
+char* getVarValue(char* var);
+void updateSymbolVal(symb * head, char * val, char * var);
 
 
 
@@ -140,7 +140,7 @@ union YYSTYPE
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable
-	struct symb;
+
        
 
 #line 147 "y.tab.c" /* yacc.c:355  */
@@ -1517,7 +1517,7 @@ yyreturn:
 #line 67 "yacc-progetto.y" /* yacc.c:1906  */
 
 
-char * getVarValue(char * var){
+char* getVarValue(char * var){
 
 	return "ciao";
 }

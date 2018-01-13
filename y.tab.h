@@ -66,7 +66,7 @@ union YYSTYPE
 
 	char* var; //Name of the variable
 	char* val; //Value of the variable
-	struct symb;
+
        
 
 #line 73 "y.tab.h" /* yacc.c:1909  */

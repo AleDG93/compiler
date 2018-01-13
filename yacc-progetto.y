@@ -6,9 +6,6 @@
 
 void yyerror (char *s);
 
-char * getVarValue(char var);
-void updateSymbolVal(symb * symbol, char * val, char * var);
-
 typedef struct symbol_table {
 
     char * var;
@@ -17,6 +14,9 @@ typedef struct symbol_table {
 } symb;
 
 
+char* getVarValue(char* var);
+void updateSymbolVal(symb * head, char * val, char * var);
+
 
 %}
 
@@ -24,7 +24,7 @@ typedef struct symbol_table {
 %union {
 	char* var; //Name of the variable
 	char* val; //Value of the variable
-	struct symb;
+
        }
 
 %token <var> VAR
@@ -41,7 +41,7 @@ typedef struct symbol_table {
 %%
 
 
-line	:assign '\n'		{;}
+line	: assign '\n'		{;}
 	| exit_command		{exit(EXIT_SUCCESS);}
 	| print expr '\n'	{printf("Printing: %s\n", $2);}
 	| line assign '\n'	{;}
@@ -66,7 +66,7 @@ line  : VAR '=' VAL {printf("Assign: %s to %s", $1,$3);}
 
 %%
 
-char * getVarValue(char * var){
+char* getVarValue(char * var){
 
 	return "ciao";
 }
