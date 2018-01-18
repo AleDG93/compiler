@@ -5,17 +5,39 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "y.tab.h"
 
 %}
 
-WORD	 [a-zA-Z]+
+LETTER	 [a-zA-Z]
+WORD	 {LETTER}+
 DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
-VAR	 {WORD}[{WORD}|{NUM}]*
-VAL	 [ ]?{VAR}
+ID	 {LETTER}({WORD}|{NUM})*
+NEW_L    (\r\n|\n)
+
 %%
 
-[ ]		{ /* skip blanks */ }
+{NUM} {
+	yylval.value = atoi(yytext);
+        return VALUE;
+}
+
+{ID} {
+	yylval.lexeme = strdup(yytext);
+	return ID;
+}
+
+"<-"	{
+	return ASSIGN;
+}
+
+
+
+%%
+
+/*
+[ ]		{  skip blanks  }
 
 "tellMe" {return print;}
 "exit"	 {return exit_command;}
@@ -27,8 +49,8 @@ VAL	 [ ]?{VAR}
 			return VAL;}
 
 
-"("	{return '(';}
-")"	{return ')';}
+"("		{return '(';}
+")"		{return ')';}
 "->"	{return '=';}
 "+"     {return '+';}
 "-"     {return '-';}
@@ -36,6 +58,5 @@ VAL	 [ ]?{VAR}
 "/"     {return '/';}
 \n      {return ';';}
 [ \t\n]	;
+*/
 
-
-%%

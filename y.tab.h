@@ -45,31 +45,27 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    VAR = 258,
-    VAL = 259,
-    print = 260,
-    exit_command = 261
+    ID = 258,
+    VALUE = 259,
+    ASSIGN = 260
   };
 #endif
 /* Tokens.  */
-#define VAR 258
-#define VAL 259
-#define print 260
-#define exit_command 261
+#define ID 258
+#define VALUE 259
+#define ASSIGN 260
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 25 "yacc-progetto.y" /* yacc.c:1909  */
+#line 24 "yacc-progetto.y" /* yacc.c:1909  */
 
-	char* var; //Name of the variable
-	char* val; //Value of the variable
-	char* str;
-       
+	int value;
+	char *lexeme;
 
-#line 73 "y.tab.h" /* yacc.c:1909  */
+#line 69 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
