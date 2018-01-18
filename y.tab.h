@@ -47,13 +47,15 @@ extern int yydebug;
   {
     ID = 258,
     VALUE = 259,
-    ASSIGN = 260
+    OP = 260,
+    ASSIGN = 261
   };
 #endif
 /* Tokens.  */
 #define ID 258
 #define VALUE 259
-#define ASSIGN 260
+#define OP 260
+#define ASSIGN 261
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -64,8 +66,9 @@ union YYSTYPE
 
 	int value;
 	char *lexeme;
+	char op;
 
-#line 69 "y.tab.h" /* yacc.c:1909  */
+#line 72 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

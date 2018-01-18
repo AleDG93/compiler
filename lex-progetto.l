@@ -15,7 +15,7 @@ DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
 ID	 {LETTER}({WORD}|{NUM})*
 NEW_L    (\r\n|\n)
-
+OP		[+-/*]
 %%
 
 {NUM} {
@@ -32,7 +32,18 @@ NEW_L    (\r\n|\n)
 	return ASSIGN;
 }
 
+{OP} {
+	return OP;
+}
 
+"(" {
+	return '(';
+}
+
+
+")" {
+	return ')';
+}
 
 %%
 
