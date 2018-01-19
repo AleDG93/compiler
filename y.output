@@ -1,6 +1,4 @@
-Terminals unused in grammar
-
-   OP
+State 10 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -12,18 +10,19 @@ Grammar
 
     3 statement: ID ASSIGN expr
 
-    4 expr: ID ASSIGN expr
+    4 expr: expr OP expr
     5     | VALUE
+    6     | ID
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-ID (258) 3 4
+ID (258) 3 6
 VALUE (259) 5
-OP (260)
-ASSIGN (261) 3 4
+OP (260) 4
+ASSIGN (261) 3
 
 
 Nonterminals, with rules where they appear
@@ -35,7 +34,7 @@ program (8)
 statement (9)
     on left: 3, on right: 1
 expr (10)
-    on left: 4 5, on right: 3 4
+    on left: 4 5 6, on right: 3 4
 
 
 State 0
@@ -91,9 +90,9 @@ State 5
 
 State 6
 
-    4 expr: ID . ASSIGN expr
+    6 expr: ID .
 
-    ASSIGN  shift, and go to state 9
+    $default  reduce using rule 6 (expr)
 
 
 State 7
@@ -106,13 +105,16 @@ State 7
 State 8
 
     3 statement: ID ASSIGN expr .
+    4 expr: expr . OP expr
+
+    OP  shift, and go to state 9
 
     $default  reduce using rule 3 (statement)
 
 
 State 9
 
-    4 expr: ID ASSIGN . expr
+    4 expr: expr OP . expr
 
     ID     shift, and go to state 6
     VALUE  shift, and go to state 7
@@ -122,6 +124,10 @@ State 9
 
 State 10
 
-    4 expr: ID ASSIGN expr .
+    4 expr: expr . OP expr
+    4     | expr OP expr .
 
+    OP  shift, and go to state 9
+
+    OP        [reduce using rule 4 (expr)]
     $default  reduce using rule 4 (expr)

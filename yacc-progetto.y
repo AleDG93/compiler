@@ -34,6 +34,7 @@ int computeOperation(int val1, char *op, int val2);
 
 %type <op> OP
 %type <value> expr
+
 %start program
 
 
@@ -44,19 +45,23 @@ program: program statement {}
 	
 statement: ID ASSIGN expr		{
 		updateSymbolTable($1,$3);
-		printf("Found a statement with: '%s' <- '%d'", $1, $3);
-	};
+		printf("Found a statement with: '%s' <- '%d'\n", $1, $3);
+	}
 	;
-expr: ID ASSIGN expr
+expr:	expr OP expr	{
+		printf("\n#\n#\nENTERING HERE MADAFACCA\n#\n\n");
+		$$ = computeOperation($1,$2,$3);
+		}	
 	| VALUE 	{ 
 		printf("Found VALUE '%d'\n", $1);
 		$$ = $1;
 		}
 	| ID		{ 
-			printf("Found ID '%s'\n", $1); 
-			$$ = getVarValue($1);
+		printf("Found ID '%s'\n", $1); 
+		$$ = getVarValue($1);
 		}	
 	;
+
 /*expr: expr OP expr	{
 			$$ = computeOperation($1,$2,$3);
 			}
@@ -93,7 +98,7 @@ int getVarValue(char * var){
 }
  
 void updateSymbolTable(char * var, int val) {
-    
+
 	printf("VAR: %s and VAL: %d\n", var,val);
 	symb * current = head;
 	// Check if variable already exists 
@@ -126,20 +131,29 @@ void updateSymbolTable(char * var, int val) {
 
 
 int computeOperation(int val1, char *op, int val2){
-
-	if(strcmp(op, "sum") == 0){
+	
+	printf("\nCOMPUTING OEPERATION\n with operator :\n %s \n", op);
+     	char sum[] = "sum";
+	char sub[] = "sub";
+	char div[] = "div";
+	char prod[] = "prod";
+	int result;
+	if(strcmp(op, sum) == 0){
 		printf("Do operation sum");
-		return (val1 + val2);
+		result = (val1 + val2);
 	} else if(strcmp(op, "sub") == 0){
 		printf("Do operation sub");
-		return (val1 - val2);
+		result = (val1 - val2);
 	} else if(strcmp(op, "div") == 0){
 		printf("Do operation dib");
-		return (val1 / val2);
+		result = (val1 / val2);
 	} else if(strcmp(op, "prod") == 0){
 		printf("Do operation prod");
-		return (val1 * val2);
+		result = (val1 * val2);
+	} else {
+		result = 99;
 	}
+	return result;
 }
 
 
