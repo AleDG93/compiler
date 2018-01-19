@@ -1,6 +1,5 @@
-ab -> casa
-cd -> giardino
-ef -> cuscino
-tellMe(ab)
-exit
+ab <- 34
+cd <- 22
+ef <- 13
+end
 	

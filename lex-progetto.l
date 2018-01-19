@@ -10,13 +10,20 @@
 %}
 
 LETTER	 [a-zA-Z]
+OP	 sum|sub|prod|div
 WORD	 {LETTER}+
 DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
 ID	 {LETTER}({WORD}|{NUM})*
 NEW_L    (\r\n|\n)
-OP		[+-/*]
+
 %%
+
+{OP} {
+	yylval.op == strdup(yytext);
+	printf("\noperator %s \n",strdup(yytext));
+	return OP;
+}
 
 {NUM} {
 	yylval.value = atoi(yytext);
@@ -32,9 +39,7 @@ OP		[+-/*]
 	return ASSIGN;
 }
 
-{OP} {
-	return OP;
-}
+
 
 "(" {
 	return '(';

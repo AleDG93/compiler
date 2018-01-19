@@ -66,7 +66,7 @@ union YYSTYPE
 
 	int value;
 	char *lexeme;
-	char op;
+	char *op;
 
 #line 72 "y.tab.h" /* yacc.c:1909  */
 };
