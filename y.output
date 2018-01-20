@@ -1,43 +1,51 @@
-State 13 conflicts: 1 shift/reduce
+Terminals unused in grammar
+
+   LOGIC
+
+
+State 17 conflicts: 1 shift/reduce
 
 
 Grammar
 
     0 $accept: program $end
 
-    1 program: program statement
+    1 program: program stmt
     2        | %empty
 
-    3 statement: ID ASSIGN expr
+    3 stmt: ID ASSIGN expr
+    4     | TELLME '(' expr ')'
 
-    4 expr: expr OP expr
-    5     | '(' expr ')'
-    6     | VALUE
-    7     | ID
+    5 expr: VALUE
+    6     | ID
+    7     | expr OP expr
+    8     | '(' expr ')'
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
-'(' (40) 5
-')' (41) 5
+'(' (40) 4 8
+')' (41) 4 8
 error (256)
-ID (258) 3 7
-VALUE (259) 6
-OP (260) 4
+ID (258) 3 6
+VALUE (259) 5
+OP (260) 7
 ASSIGN (261) 3
+LOGIC (262)
+TELLME (263) 4
 
 
 Nonterminals, with rules where they appear
 
-$accept (9)
+$accept (11)
     on left: 0
-program (10)
+program (12)
     on left: 1 2, on right: 0 1
-statement (11)
-    on left: 3, on right: 1
-expr (12)
-    on left: 4 5 6 7, on right: 3 4 5
+stmt (13)
+    on left: 3 4, on right: 1
+expr (14)
+    on left: 5 6 7 8, on right: 3 4 7 8
 
 
 State 0
@@ -52,12 +60,13 @@ State 0
 State 1
 
     0 $accept: program . $end
-    1 program: program . statement
+    1 program: program . stmt
 
-    $end  shift, and go to state 2
-    ID    shift, and go to state 3
+    $end    shift, and go to state 2
+    ID      shift, and go to state 3
+    TELLME  shift, and go to state 4
 
-    statement  go to state 4
+    stmt  go to state 5
 
 
 State 2
@@ -69,97 +78,131 @@ State 2
 
 State 3
 
-    3 statement: ID . ASSIGN expr
+    3 stmt: ID . ASSIGN expr
 
-    ASSIGN  shift, and go to state 5
+    ASSIGN  shift, and go to state 6
 
 
 State 4
 
-    1 program: program statement .
+    4 stmt: TELLME . '(' expr ')'
 
-    $default  reduce using rule 1 (program)
+    '('  shift, and go to state 7
 
 
 State 5
 
-    3 statement: ID ASSIGN . expr
+    1 program: program stmt .
 
-    ID     shift, and go to state 6
-    VALUE  shift, and go to state 7
-    '('    shift, and go to state 8
-
-    expr  go to state 9
+    $default  reduce using rule 1 (program)
 
 
 State 6
 
-    7 expr: ID .
+    3 stmt: ID ASSIGN . expr
 
-    $default  reduce using rule 7 (expr)
+    ID     shift, and go to state 8
+    VALUE  shift, and go to state 9
+    '('    shift, and go to state 10
+
+    expr  go to state 11
 
 
 State 7
 
-    6 expr: VALUE .
+    4 stmt: TELLME '(' . expr ')'
 
-    $default  reduce using rule 6 (expr)
+    ID     shift, and go to state 8
+    VALUE  shift, and go to state 9
+    '('    shift, and go to state 10
+
+    expr  go to state 12
 
 
 State 8
 
-    5 expr: '(' . expr ')'
+    6 expr: ID .
 
-    ID     shift, and go to state 6
-    VALUE  shift, and go to state 7
-    '('    shift, and go to state 8
-
-    expr  go to state 10
+    $default  reduce using rule 6 (expr)
 
 
 State 9
 
-    3 statement: ID ASSIGN expr .
-    4 expr: expr . OP expr
-
-    OP  shift, and go to state 11
-
-    $default  reduce using rule 3 (statement)
-
-
-State 10
-
-    4 expr: expr . OP expr
-    5     | '(' expr . ')'
-
-    OP   shift, and go to state 11
-    ')'  shift, and go to state 12
-
-
-State 11
-
-    4 expr: expr OP . expr
-
-    ID     shift, and go to state 6
-    VALUE  shift, and go to state 7
-    '('    shift, and go to state 8
-
-    expr  go to state 13
-
-
-State 12
-
-    5 expr: '(' expr ')' .
+    5 expr: VALUE .
 
     $default  reduce using rule 5 (expr)
 
 
+State 10
+
+    8 expr: '(' . expr ')'
+
+    ID     shift, and go to state 8
+    VALUE  shift, and go to state 9
+    '('    shift, and go to state 10
+
+    expr  go to state 13
+
+
+State 11
+
+    3 stmt: ID ASSIGN expr .
+    7 expr: expr . OP expr
+
+    OP  shift, and go to state 14
+
+    $default  reduce using rule 3 (stmt)
+
+
+State 12
+
+    4 stmt: TELLME '(' expr . ')'
+    7 expr: expr . OP expr
+
+    OP   shift, and go to state 14
+    ')'  shift, and go to state 15
+
+
 State 13
 
-    4 expr: expr . OP expr
-    4     | expr OP expr .
+    7 expr: expr . OP expr
+    8     | '(' expr . ')'
 
-    OP  shift, and go to state 11
+    OP   shift, and go to state 14
+    ')'  shift, and go to state 16
 
-    OP        [reduce using rule 4 (expr)]
-    $default  reduce using rule 4 (expr)
+
+State 14
+
+    7 expr: expr OP . expr
+
+    ID     shift, and go to state 8
+    VALUE  shift, and go to state 9
+    '('    shift, and go to state 10
+
+    expr  go to state 17
+
+
+State 15
+
+    4 stmt: TELLME '(' expr ')' .
+
+    $default  reduce using rule 4 (stmt)
+
+
+State 16
+
+    8 expr: '(' expr ')' .
+
+    $default  reduce using rule 8 (expr)
+
+
+State 17
+
+    7 expr: expr . OP expr
+    7     | expr OP expr .
+
+    OP  shift, and go to state 14
+
+    OP        [reduce using rule 7 (expr)]
+    $default  reduce using rule 7 (expr)

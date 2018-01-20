@@ -16,21 +16,30 @@ DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
 ID	 {LETTER}({WORD}|{NUM})*
 NEW_L    (\r\n|\n)
+LOGIC	 eq|lt|gt
 
 %%
 
-{OP} {
+"tellMe" {
+	return TELLME;
+}
+
+{LOGIC}	{
+		
+}
+
+{OP} 	{
 	yylval.op = strdup(yytext);
 	printf("\noperator %s \n",strdup(yytext));
 	return OP;
 }
 
-{NUM} {
+{NUM} 	{
 	yylval.value = atoi(yytext);
         return VALUE;
 }
 
-{ID} {
+{ID} 	{
 	yylval.lexeme = strdup(yytext);
 	return ID;
 }
@@ -39,14 +48,11 @@ NEW_L    (\r\n|\n)
 	return ASSIGN;
 }
 
-
-
-"(" {
+"(" 	{
 	return '(';
 }
 
-
-")" {
+")" 	{
 	return ')';
 }
 
