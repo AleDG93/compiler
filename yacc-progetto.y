@@ -33,6 +33,7 @@ int computeLogicOperation(int val1, char *op, int val2);
 %token ASSIGN
 %token LOGIC
 %token TELLME
+%token ELSE
 
 %type <op> OP LOGIC
 %type <value> expr logiceq
@@ -52,7 +53,7 @@ stmt: 	ID ASSIGN expr	'\n' {
 	| TELLME '(' expr ')' '\n' {
 			printf("\nTellin' you: %d\n",$3);
 			}
-	| logiceq '\n'		{
+	| logiceq '\n' '\t' stmt ELSE '\n' '\t' stmt	{
 			printf("\nLogic result is: %d\n", $1);
 			}
 	;

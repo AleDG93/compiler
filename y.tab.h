@@ -50,7 +50,8 @@ extern int yydebug;
     OP = 260,
     ASSIGN = 261,
     LOGIC = 262,
-    TELLME = 263
+    TELLME = 263,
+    ELSE = 264
   };
 #endif
 /* Tokens.  */
@@ -60,6 +61,7 @@ extern int yydebug;
 #define ASSIGN 261
 #define LOGIC 262
 #define TELLME 263
+#define ELSE 264
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -72,7 +74,7 @@ union YYSTYPE
 	char *lexeme;
 	char *op;
 
-#line 76 "y.tab.h" /* yacc.c:1909  */
+#line 78 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

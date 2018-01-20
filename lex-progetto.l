@@ -30,6 +30,10 @@ LOGIC	 eq|lt|gt
 	return '\t';
 }
 
+"else"	{
+	return ELSE;
+}
+
 "tellMe" {
 	return TELLME;
 }

@@ -1,0 +1,4 @@
+3 lt 2
+	tellMe(5)
+else
+	tellMe(9)
