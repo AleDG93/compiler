@@ -12,12 +12,24 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+typedef struct actions {
+
+    char * action;
+    int val1;
+    int val2;
+} act;
+
 symb * head = NULL;
 
 int getVarValue(char* var);
 void updateSymbolVal(char * var, int val);
 int computeOperation(int val1, char *op, int val2);
 int computeLogicOperation(int val1, char *op, int val2);
+void pleaseDo(act *action);
+void executeIf(int logicOp, act *val1, act *val2);
+act * telling(int val);
+act * assignment(char * val1, int val2);
+
 
 %}
 
@@ -25,6 +37,7 @@ int computeLogicOperation(int val1, char *op, int val2);
 	int value;
 	char *lexeme;
 	char *op;
+	act *opaction;
 }
 
 %token <lexeme> ID
@@ -37,7 +50,7 @@ int computeLogicOperation(int val1, char *op, int val2);
 
 %type <op> OP LOGIC
 %type <value> expr logiceq
-
+%type <opaction> neststmt
 
 %start program
 
@@ -53,8 +66,23 @@ stmt: 	ID ASSIGN expr	'\n' {
 	| TELLME '(' expr ')' '\n' {
 			printf("\nTellin' you: %d\n",$3);
 			}
-	| logiceq '\n' '\t' stmt ELSE '\n' '\t' stmt	{
-			printf("\nLogic result is: %d\n", $1);
+	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt	{
+			executeIf($1,$4,$8);
+			}
+	;
+
+neststmt:ID ASSIGN expr	'\n' {
+			$$ = assignment($1, $3);
+			}
+	| TELLME '(' expr ')' '\n' {
+			$$ = telling($3);
+			}
+	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt	{
+				if($1 == 1){
+					$$ = $4;
+				} else {
+					$$ = $8;	
+				}
 			}
 	;
 
@@ -81,6 +109,7 @@ expr:	VALUE 	{
 
 %%
 
+
 int getVarValue(char * var){
 
 	symb * current = head;
@@ -93,7 +122,48 @@ int getVarValue(char * var){
 
 	return result;
 }
- 
+
+
+void executeIf(int logicOp, act *val1, act *val2){
+	
+	if(logicOp == 0){
+		pleaseDo(val1);	
+	} else {
+		pleaseDo(val2);
+	}
+}
+
+void pleaseDo(act *anAction){
+
+	if(strcmp(anAction->action, "telling") == 0){
+		printf("\n\nPLEASEDO PRINT: %d\n\n", anAction->val2);
+	} else if(strcmp(anAction->action, "assign") == 0){
+		printf("\n\nPLEASE DO ASSIGNMENT\n\n");
+		updateSymbolTable(anAction->val1,anAction->val2);
+	}
+}
+
+act * telling(int val){
+	
+	act * theAction = NULL;
+	theAction = malloc(sizeof(act));
+	theAction->action = "telling";
+	theAction->val2 = val;
+
+	return theAction;
+	
+}
+
+act * assignment(char * val1, int val2){
+
+	act * theAction = malloc(sizeof(act));
+	theAction->action = "assign";
+	theAction->val1 = strdup(val1);
+	theAction->val2 = val2;
+
+	return theAction;
+
+}
 void updateSymbolTable(char * var, int val) {
 
 	symb * current = head;
@@ -159,6 +229,7 @@ int main (void) {
 	/* init symbol table */
 	
 	head = malloc(sizeof(symb));
+
 	if (head == NULL) {
 	    return 1;
 	}

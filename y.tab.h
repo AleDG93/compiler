@@ -68,13 +68,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 24 "yacc-progetto.y" /* yacc.c:1909  */
+#line 36 "yacc-progetto.y" /* yacc.c:1909  */
 
 	int value;
 	char *lexeme;
 	char *op;
+	act *opaction;
 
-#line 78 "y.tab.h" /* yacc.c:1909  */
+#line 79 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
