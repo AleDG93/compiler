@@ -20,7 +20,7 @@ NEW_L    (\r\n|\n)
 %%
 
 {OP} {
-	yylval.op == strdup(yytext);
+	yylval.op = strdup(yytext);
 	printf("\noperator %s \n",strdup(yytext));
 	return OP;
 }

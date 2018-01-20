@@ -812,7 +812,7 @@ case 1:
 YY_RULE_SETUP
 #line 22 "lex-progetto.l"
 {
-	yylval.op == strdup(yytext);
+	yylval.op = strdup(yytext);
 	printf("\noperator %s \n",strdup(yytext));
 	return OP;
 }

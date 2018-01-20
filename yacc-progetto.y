@@ -51,7 +51,10 @@ statement: ID ASSIGN expr		{
 expr:	expr OP expr	{
 		printf("\n#\n#\nENTERING HERE MADAFACCA\n#\n\n");
 		$$ = computeOperation($1,$2,$3);
-		}	
+		}
+	| '(' expr ')'	{
+			$$ = $2;
+			}
 	| VALUE 	{ 
 		printf("Found VALUE '%d'\n", $1);
 		$$ = $1;
@@ -65,9 +68,7 @@ expr:	expr OP expr	{
 /*expr: expr OP expr	{
 			$$ = computeOperation($1,$2,$3);
 			}
-	| '(' expr ')'	{
-			$$ = $2;
-			}
+	
 	| VALUE		{ 
 			printf("Found VALUE '%d'\n", $1); 
 			$$ = $1;
@@ -133,12 +134,10 @@ void updateSymbolTable(char * var, int val) {
 int computeOperation(int val1, char *op, int val2){
 	
 	printf("\nCOMPUTING OEPERATION\n with operator :\n %s \n", op);
-     	char sum[] = "sum";
-	char sub[] = "sub";
-	char div[] = "div";
-	char prod[] = "prod";
+     	
 	int result;
-	if(strcmp(op, sum) == 0){
+
+	if(strcmp(op, "sum") == 0){
 		printf("Do operation sum");
 		result = (val1 + val2);
 	} else if(strcmp(op, "sub") == 0){
