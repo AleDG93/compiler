@@ -46,13 +46,13 @@ program: program stmt {}
 	|	{}
 	;
 	
-stmt: 	ID ASSIGN expr		{
+stmt: 	ID ASSIGN expr	'\n' {
 			updateSymbolTable($1,$3);
 			}
-	| TELLME '(' expr ')'	{
+	| TELLME '(' expr ')' '\n' {
 			printf("\nTellin' you:%d\n",$3);
 			}
-	| logiceq 		{
+	| logiceq '\n'		{
 			printf("\nLogic result is: %d\n", $1);
 			}
 	;

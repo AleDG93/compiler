@@ -20,6 +20,12 @@ LOGIC	 eq|lt|gt
 
 %%
 
+[ ]	 {}
+
+"\n"	{
+	return '\n';
+}
+
 "tellMe" {
 	return TELLME;
 }
