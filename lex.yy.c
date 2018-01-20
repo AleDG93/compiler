@@ -831,15 +831,15 @@ case 2:
 YY_RULE_SETUP
 #line 27 "lex-progetto.l"
 {
-		
+	yylval.op = strdup(yytext);
+	return LOGIC;
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 31 "lex-progetto.l"
+#line 32 "lex-progetto.l"
 {
 	yylval.op = strdup(yytext);
-	printf("\noperator %s \n",strdup(yytext));
 	return OP;
 }
 	YY_BREAK

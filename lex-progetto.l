@@ -25,12 +25,12 @@ LOGIC	 eq|lt|gt
 }
 
 {LOGIC}	{
-		
+	yylval.op = strdup(yytext);
+	return LOGIC;
 }
 
 {OP} 	{
 	yylval.op = strdup(yytext);
-	printf("\noperator %s \n",strdup(yytext));
 	return OP;
 }
 

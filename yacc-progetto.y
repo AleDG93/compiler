@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 void yyerror (char *s);
 
@@ -18,6 +17,7 @@ symb * head = NULL;
 int getVarValue(char* var);
 void updateSymbolVal(char * var, int val);
 int computeOperation(int val1, char *op, int val2);
+int computeLogicOperation(int val1, char *op, int val2);
 
 %}
 
@@ -35,7 +35,7 @@ int computeOperation(int val1, char *op, int val2);
 %token TELLME
 
 %type <op> OP LOGIC
-%type <value> expr
+%type <value> expr logiceq
 
 
 %start program
@@ -47,12 +47,21 @@ program: program stmt {}
 	;
 	
 stmt: 	ID ASSIGN expr		{
-		updateSymbolTable($1,$3);
-		}
+			updateSymbolTable($1,$3);
+			}
 	| TELLME '(' expr ')'	{
-		printf("\nTellin' you:%d\n",$3);
+			printf("\nTellin' you:%d\n",$3);
+			}
+	| logiceq 		{
+			printf("\nLogic result is: %d\n", $1);
+			}
+	;
+
+logiceq: expr LOGIC expr {
+		$$ = computeLogicOperation($1,$2,$3);
 		}
 	;
+
 
 expr:	VALUE 	{ 
 		$$ = $1;
@@ -65,8 +74,9 @@ expr:	VALUE 	{
 		}
 	| '(' expr ')'	{
 		$$ = $2;
-		}	
+		}
 	;
+
 
 %%
 
@@ -103,7 +113,6 @@ void updateSymbolTable(char * var, int val) {
 }
 
 
-
 int computeOperation(int val1, char *op, int val2){
 	 	
 	int result;
@@ -121,6 +130,27 @@ int computeOperation(int val1, char *op, int val2){
 	}
 	return result;
 }
+
+int computeLogicOperation(int val1, char *logic, int val2){
+	 
+	int result = 0;
+
+	if(strcmp(logic, "eq") == 0){
+		if(val1 == val2){
+			result = 1;
+		}		
+	}else if(strcmp(logic, "lt") == 0){
+		if(val1 < val2){
+			result = 1;
+		}		
+	}else if(strcmp(logic, "gt") == 0){
+		if(val1 > val2){
+			result = 1;
+		}
+	}		
+	return result;
+}
+
 
 
 int main (void) {
@@ -144,8 +174,4 @@ int main (void) {
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
 
 #include "lex.yy.c"
-
-
-
-
 
