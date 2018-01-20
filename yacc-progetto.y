@@ -50,7 +50,7 @@ stmt: 	ID ASSIGN expr	'\n' {
 			updateSymbolTable($1,$3);
 			}
 	| TELLME '(' expr ')' '\n' {
-			printf("\nTellin' you:%d\n",$3);
+			printf("\nTellin' you: %d\n",$3);
 			}
 	| logiceq '\n'		{
 			printf("\nLogic result is: %d\n", $1);

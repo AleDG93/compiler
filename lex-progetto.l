@@ -26,6 +26,10 @@ LOGIC	 eq|lt|gt
 	return '\n';
 }
 
+"\t"	{
+	return '\t';
+}
+
 "tellMe" {
 	return TELLME;
 }

@@ -1,5 +1,7 @@
-ab <- 34
-cd <- 22
-ef <- 13
-end
-	
+ab <- 5
+cd <- 10
+ab lt cd
+cd lt ab
+ef <- ab sum cd
+tellMe(ab)
+tellMe(ef)

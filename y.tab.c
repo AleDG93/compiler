@@ -1265,7 +1265,7 @@ yyreduce:
   case 5:
 #line 52 "yacc-progetto.y" /* yacc.c:1646  */
     {
-			printf("\nTellin' you:%d\n",(yyvsp[-2].value));
+			printf("\nTellin' you: %d\n",(yyvsp[-2].value));
 			}
 #line 1271 "y.tab.c" /* yacc.c:1646  */
     break;
