@@ -1,0 +1,12 @@
+ab <- 3
+cd <- 5
+ab lt cd
+	ef <- 4 sum 8
+else
+	ef <- 4
+cd eq 9
+	ww <- 9 prod 2
+else
+	ww <- 10
+tellMe(ef)
+tellMe(ww)

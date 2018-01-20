@@ -64,9 +64,9 @@ stmt: 	ID ASSIGN expr	'\n' {
 			updateSymbolTable($1,$3);
 			}
 	| TELLME '(' expr ')' '\n' {
-			printf("\nTellin' you: %d\n",$3);
+			printf("%d\n",$3);
 			}
-	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt	{
+	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt {
 			executeIf($1,$4,$8);
 			}
 	;
@@ -77,11 +77,11 @@ neststmt:ID ASSIGN expr	'\n' {
 	| TELLME '(' expr ')' '\n' {
 			$$ = telling($3);
 			}
-	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt	{
+	| logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt {
 				if($1 == 1){
 					$$ = $4;
 				} else {
-					$$ = $8;	
+					$$ = $9;	
 				}
 			}
 	;
@@ -126,7 +126,7 @@ int getVarValue(char * var){
 
 void executeIf(int logicOp, act *val1, act *val2){
 	
-	if(logicOp == 0){
+	if(logicOp == 1){
 		pleaseDo(val1);	
 	} else {
 		pleaseDo(val2);
@@ -136,9 +136,8 @@ void executeIf(int logicOp, act *val1, act *val2){
 void pleaseDo(act *anAction){
 
 	if(strcmp(anAction->action, "telling") == 0){
-		printf("\n\nPLEASEDO PRINT: %d\n\n", anAction->val2);
+		printf("%d\n", anAction->val2);
 	} else if(strcmp(anAction->action, "assign") == 0){
-		printf("\n\nPLEASE DO ASSIGNMENT\n\n");
 		updateSymbolTable(anAction->val1,anAction->val2);
 	}
 }

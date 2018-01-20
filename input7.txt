@@ -1,0 +1,13 @@
+ab <- 1
+cd <- 2
+ab gt cd
+	fin <- 10
+else
+	cd lt 20
+		cd lt 15
+			fin <- 100
+		else
+			fin <- 80
+	else
+		fin <- 60
+tellMe(fin)

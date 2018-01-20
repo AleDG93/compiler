@@ -17,7 +17,7 @@ NUM      {DIGIT}+(\.{DIGIT}+)?
 ID	 {LETTER}({WORD}|{NUM})*
 NEW_L    (\r\n|\n)
 LOGIC	 eq|lt|gt
-
+TABS	 [\t]+
 %%
 
 [ ]	 {}
@@ -26,7 +26,7 @@ LOGIC	 eq|lt|gt
 	return '\n';
 }
 
-"\t"	{
+{TABS}	{
 	return '\t';
 }
 

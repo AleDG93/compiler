@@ -14,7 +14,7 @@ Grammar
 
     6 neststmt: ID ASSIGN expr '\n'
     7         | TELLME '(' expr ')' '\n'
-    8         | logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt
+    8         | logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt
 
     9 logiceq: expr LOGIC expr
 
@@ -314,7 +314,7 @@ State 27
 
 State 28
 
-    8 neststmt: logiceq . '\n' '\t' neststmt ELSE '\n' '\t' neststmt
+    8 neststmt: logiceq . '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt
 
     '\n'  shift, and go to state 33
 
@@ -357,7 +357,7 @@ State 32
 
 State 33
 
-    8 neststmt: logiceq '\n' . '\t' neststmt ELSE '\n' '\t' neststmt
+    8 neststmt: logiceq '\n' . '\t' neststmt '\t' ELSE '\n' '\t' neststmt
 
     '\t'  shift, and go to state 37
 
@@ -389,7 +389,7 @@ State 36
 
 State 37
 
-    8 neststmt: logiceq '\n' '\t' . neststmt ELSE '\n' '\t' neststmt
+    8 neststmt: logiceq '\n' '\t' . neststmt '\t' ELSE '\n' '\t' neststmt
 
     ID      shift, and go to state 25
     VALUE   shift, and go to state 4
@@ -431,9 +431,9 @@ State 40
 
 State 41
 
-    8 neststmt: logiceq '\n' '\t' neststmt . ELSE '\n' '\t' neststmt
+    8 neststmt: logiceq '\n' '\t' neststmt . '\t' ELSE '\n' '\t' neststmt
 
-    ELSE  shift, and go to state 44
+    '\t'  shift, and go to state 44
 
 
 State 42
@@ -452,34 +452,41 @@ State 43
 
 State 44
 
-    8 neststmt: logiceq '\n' '\t' neststmt ELSE . '\n' '\t' neststmt
+    8 neststmt: logiceq '\n' '\t' neststmt '\t' . ELSE '\n' '\t' neststmt
 
-    '\n'  shift, and go to state 45
+    ELSE  shift, and go to state 45
 
 
 State 45
 
-    8 neststmt: logiceq '\n' '\t' neststmt ELSE '\n' . '\t' neststmt
+    8 neststmt: logiceq '\n' '\t' neststmt '\t' ELSE . '\n' '\t' neststmt
 
-    '\t'  shift, and go to state 46
+    '\n'  shift, and go to state 46
 
 
 State 46
 
-    8 neststmt: logiceq '\n' '\t' neststmt ELSE '\n' '\t' . neststmt
+    8 neststmt: logiceq '\n' '\t' neststmt '\t' ELSE '\n' . '\t' neststmt
+
+    '\t'  shift, and go to state 47
+
+
+State 47
+
+    8 neststmt: logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' . neststmt
 
     ID      shift, and go to state 25
     VALUE   shift, and go to state 4
     TELLME  shift, and go to state 26
     '('     shift, and go to state 6
 
-    neststmt  go to state 47
+    neststmt  go to state 48
     logiceq   go to state 28
     expr      go to state 9
 
 
-State 47
+State 48
 
-    8 neststmt: logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt .
+    8 neststmt: logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt .
 
     $default  reduce using rule 8 (neststmt)
