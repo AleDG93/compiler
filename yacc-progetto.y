@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <errno.h>
 void yyerror (char *s);
 
 typedef struct symbol_table {
 
     char * var;
     int val;
+    char * str;
     struct symbol_table * next;
 } symb;
 
@@ -17,6 +18,7 @@ typedef struct actions {
     char * action;
     int val1;
     int val2;
+    char *strVal;
 } act;
 
 symb * head = NULL;
@@ -27,9 +29,10 @@ int computeOperation(int val1, char *op, int val2);
 int computeLogicOperation(int val1, char *op, int val2);
 void pleaseDo(act *action);
 void executeIf(int logicOp, act *val1, act *val2);
+int stringToIntParser(char *input);
 act * telling(int val);
 act * assignment(char * val1, int val2);
-
+act * stringAssignment(char * val1, char * str);
 
 %}
 
@@ -38,6 +41,7 @@ act * assignment(char * val1, int val2);
 	char *lexeme;
 	char *op;
 	act *opaction;
+	symb *symbol;
 }
 
 %token <lexeme> ID
@@ -47,9 +51,10 @@ act * assignment(char * val1, int val2);
 %token LOGIC
 %token TELLME
 %token ELSE
+%token STRING
 
-%type <op> OP LOGIC
-%type <value> expr logiceq
+%type <op> OP LOGIC STRING 
+%type <value> logiceq expr
 %type <opaction> neststmt
 
 %start program
@@ -61,29 +66,36 @@ program: program stmt {}
 	;
 	
 stmt: 	ID ASSIGN expr	'\n' {
-			updateSymbolTable($1,$3);
-			}
-	| TELLME '(' expr ')' '\n' {
-			printf("%d\n",$3);
-			}
+		updateSymbolTable($1,$3,NULL);
+		}
+		| TELLME '(' expr ')' '\n' {
+		printf("%d\n",$3);
+		}
+	|ID ASSIGN STRING '\n' {
+		updateSymbolTable($1,NULL,$3);
+		}
 	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt {
-			executeIf($1,$4,$8);
-			}
+		executeIf($1,$4,$8);
+		}
 	;
 
-neststmt:ID ASSIGN expr	'\n' {
-			$$ = assignment($1, $3);
-			}
+neststmt:ID ASSIGN expr	'\n' { 
+		$$ = assignment($1, $3);
+		}
+	|ID ASSIGN STRING '\n' {
+		printf("\nFOUND A STRING! \n%s \n", $3);
+		$$ = stringAssignment($1,$3);
+		}
 	| TELLME '(' expr ')' '\n' {
-			$$ = telling($3);
-			}
+		$$ = telling($3);
+		}
 	| logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt {
-				if($1 == 1){
-					$$ = $4;
-				} else {
-					$$ = $9;		
-				}
-			}
+		if($1 == 1){
+			$$ = $4;
+		} else {
+			$$ = $9;		
+		}
+		}
 	;
 
 logiceq: expr LOGIC expr {
@@ -92,12 +104,13 @@ logiceq: expr LOGIC expr {
 	;
 
 
+
 expr:	VALUE 	{ 
 		$$ = $1;
 		}
-	| ID		{ 
+	| ID	{ 
 		$$ = getVarValue($1);
-		}	
+		}
 	| expr OP expr	{
 		$$ = computeOperation($1,$2,$3);
 		}
@@ -113,13 +126,16 @@ expr:	VALUE 	{
 int getVarValue(char * var){
 
 	symb * current = head;
-
+	char * result;
 	while (current != NULL && (strcmp(current->var,var) != 0)) {
 		current = current->next;
 	}
+	if(current->val == NULL){
+		result = strdup(current->str);
+	} else {
+		result = current->val;
+	}
 	
-	int result = current->val;
-
 	return result;
 }
 
@@ -138,7 +154,9 @@ void pleaseDo(act *anAction){
 	if(strcmp(anAction->action, "telling") == 0){
 		printf("%d\n", anAction->val2);
 	} else if(strcmp(anAction->action, "assign") == 0){
-		updateSymbolTable(anAction->val1,anAction->val2);
+		updateSymbolTable(anAction->val1,anAction->val2, NULL);
+	} else if(strcmp(anAction->action, "assignStr") == 0){
+		updateSymbolTable(anAction->val1, NULL, anAction->strVal);
 	}
 }
 
@@ -155,30 +173,66 @@ act * telling(int val){
 
 act * assignment(char * val1, int val2){
 
+
 	act * theAction = malloc(sizeof(act));
 	theAction->action = "assign";
 	theAction->val1 = strdup(val1);
 	theAction->val2 = val2;
+	theAction->strVal = NULL;
 
 	return theAction;
 
 }
-void updateSymbolTable(char * var, int val) {
 
-	symb * current = head;
-	// Check if variable already exists 
-	while (current->next != NULL && (strcmp(current->var,var) != 0)) {
-		current = current->next;
-	}
-	//If var already exists update the value	
-	if(strcmp(current->var,var) == 0){
-		current->val = val;	
+act * stringAssignment(char * val1, char *str){
+
+
+	act * theAction = malloc(sizeof(act));
+	theAction->action = "assignStr";
+	theAction->val1 = strdup(val1);
+	theAction->strVal = strdup(str);
+
+	return theAction;
+
+}
+
+void updateSymbolTable(char * var, int val, char * str) {
+
+	//If we are inserting an integer
+	if(str == NULL){
+		symb * current = head;
+		// Check if variable already exists 
+		while (current->next != NULL && (strcmp(current->var,var) != 0)) {
+			current = current->next;
+		}
+		//If var already exists update the value	
+		if(strcmp(current->var,var) == 0){
+			current->val = val;	
+		} else {
+		// If var does not exist add a new value
+			current->next = malloc(sizeof(symb));
+			current->next->var = var;
+			current->next->val = val;
+			current->next->next = NULL;
+		}
+	//If we are inserting a string
 	} else {
-	// If var does not exist add a new value
-		current->next = malloc(sizeof(symb));
-		current->next->var = var;
-		current->next->val = val;
-		current->next->next = NULL;
+		symb * current = head;
+		// Check if variable already exists 
+		while (current->next != NULL && (strcmp(current->var,var) != 0)) {
+			current = current->next;
+		}
+		//If var already exists update the value	
+		if(strcmp(current->var,var) == 0){
+			current->str = strdup(str);	
+		} else {
+		// If var does not exist add a new value
+			current->next = malloc(sizeof(symb));
+			current->next->var = var;
+			current->next->val = NULL;
+			current->next->str = strdup(str);
+			current->next->next = NULL;
+		}
 	}
 }
 
@@ -221,6 +275,20 @@ int computeLogicOperation(int val1, char *logic, int val2){
 	return result;
 }
 
+int stringToIntParser(char *input){
+	
+	// parsing with error handling
+	char *end;
+	int i = strtol(input, &end, 10);
+	i = strtol(input, &end, 10);
+	input = end;
+	if (errno == ERANGE){
+	    printf("range error, got ");
+	    errno = 0;
+	}
+	return i;
+}
+
 
 
 int main (void) {
@@ -235,9 +303,8 @@ int main (void) {
 
 	head->var = "head";
 	head->val = 1;
+	head->str = "str";
 	head->next = NULL;
-
-	
 
 	return yyparse ( );
 }

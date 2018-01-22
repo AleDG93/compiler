@@ -1,0 +1,3 @@
+ab <- 'Questa e una stringa'
+cd <- 3
+tellMe(ab)

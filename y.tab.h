@@ -51,7 +51,8 @@ extern int yydebug;
     ASSIGN = 261,
     LOGIC = 262,
     TELLME = 263,
-    ELSE = 264
+    ELSE = 264,
+    STRING = 265
   };
 #endif
 /* Tokens.  */
@@ -62,20 +63,22 @@ extern int yydebug;
 #define LOGIC 262
 #define TELLME 263
 #define ELSE 264
+#define STRING 265
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 36 "yacc-progetto.y" /* yacc.c:1909  */
+#line 39 "yacc-progetto.y" /* yacc.c:1909  */
 
 	int value;
 	char *lexeme;
 	char *op;
 	act *opaction;
+	symb *symbol;
 
-#line 79 "y.tab.h" /* yacc.c:1909  */
+#line 82 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

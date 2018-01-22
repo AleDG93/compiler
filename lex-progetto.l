@@ -17,12 +17,13 @@ NUM      {DIGIT}+(\.{DIGIT}+)?
 ID	 {LETTER}({WORD}|{NUM})*
 NEW_L    (\r\n|\n)
 LOGIC	 eq|lt|gt
+STRING   '({WORD}|{NUM}|{LETTER}|[ ])*'
 TABS	 [\t]+
 %%
 
 [ ]	 {}
 
-"\n"	{
+{NEW_L}	{
 	return '\n';
 }
 
@@ -54,11 +55,18 @@ TABS	 [\t]+
 }
 
 {ID} 	{
+	printf("Lexer found id \n");
 	yylval.lexeme = strdup(yytext);
 	return ID;
 }
 
+{STRING} {
+	yylval.lexeme = strdup(yytext);
+	printf("Lexer found a string\n%s \n", strdup(yytext));
+	return STRING;
+}
 "<-"	{
+	printf("Lexer found assignment \n");
 	return ASSIGN;
 }
 
@@ -70,7 +78,9 @@ TABS	 [\t]+
 	return ')';
 }
 
-
+"'"	{
+	return '\'';
+}
 
 
 
