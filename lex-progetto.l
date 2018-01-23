@@ -10,7 +10,7 @@
 %}
 
 LETTER	 [a-zA-Z]
-OP	 sum|sub|prod|div
+OP	 sum|sub|prod|div|concat
 WORD	 {LETTER}+
 DIGIT    [0-9]
 NUM      {DIGIT}+(\.{DIGIT}+)?
@@ -55,18 +55,15 @@ TABS	 [\t]+
 }
 
 {ID} 	{
-	printf("Lexer found id \n");
 	yylval.lexeme = strdup(yytext);
 	return ID;
 }
 
 {STRING} {
 	yylval.lexeme = strdup(yytext);
-	printf("Lexer found a string\n%s \n", strdup(yytext));
 	return STRING;
 }
 "<-"	{
-	printf("Lexer found assignment \n");
 	return ASSIGN;
 }
 

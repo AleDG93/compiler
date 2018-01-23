@@ -67,9 +67,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
+
 void yyerror (char *s);
 
+//Symbol table structure
 typedef struct symbol_table {
 
     char * var;
@@ -78,29 +79,40 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+//Action structure
 typedef struct actions {
 
     char * action;
-    int val1;
+    char * val1;
     int val2;
     char *strVal;
 } act;
 
+//Data structure
+typedef struct expressions {
+
+	char * dataType;
+	int intVal;
+	char * strVal;	
+
+} data;
+
+
 symb * head = NULL;
 
-int getVarValue(char* var);
-void updateSymbolVal(char * var, int val);
-int computeOperation(int val1, char *op, int val2);
-int computeLogicOperation(int val1, char *op, int val2);
+data * getVarValue(char* var);
+void updateSymbolTable(char * var, int val, char * str);
+data * computeOperation(data *val1, char *op, data *val2);
+int computeLogicOperation(data *val1, char *op, data *val2);
 void pleaseDo(act *action);
 void executeIf(int logicOp, act *val1, act *val2);
-int stringToIntParser(char *input);
-act * telling(int val);
-act * assignment(char * val1, int val2);
-act * stringAssignment(char * val1, char * str);
+act * telling(data *val);
+act * assignment(char * val1, data *val2);
+data * createExpression(char * dataType, int intVal, char * strVal);
+char * extractString(char *originalString);
 
 
-#line 104 "y.tab.c" /* yacc.c:339  */
+#line 116 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -160,15 +172,16 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 39 "yacc-progetto.y" /* yacc.c:355  */
+#line 51 "yacc-progetto.y" /* yacc.c:355  */
 
 	int value;
 	char *lexeme;
 	char *op;
 	act *opaction;
 	symb *symbol;
+	data *expression;
 
-#line 172 "y.tab.c" /* yacc.c:355  */
+#line 185 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -185,7 +198,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 189 "y.tab.c" /* yacc.c:358  */
+#line 202 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -427,16 +440,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   65
+#define YYLAST   49
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  15
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  16
+#define YYNRULES  14
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  53
+#define YYNSTATES  42
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -450,11 +463,11 @@ union yyalloc
    as returned by yylex, without out-of-bounds checking.  */
 static const yytype_uint8 yytranslate[] =
 {
-       0,     2,     2,     2,     2,     2,     2,     2,     2,    14,
+       0,     2,     2,     2,     2,     2,     2,     2,     2,    12,
       11,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      12,    13,     2,     2,     2,     2,     2,     2,     2,     2,
+      13,    14,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -483,8 +496,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    64,    64,    65,    68,    71,    74,    77,    82,    85,
-      89,    92,   101,   108,   111,   114,   117
+       0,    81,    81,    82,    85,    88,    93,    96,    99,   108,
+     119,   122,   125,   128,   131
 };
 #endif
 
@@ -494,7 +507,7 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "ID", "VALUE", "OP", "ASSIGN", "LOGIC",
-  "TELLME", "ELSE", "STRING", "'\\n'", "'('", "')'", "'\\t'", "$accept",
+  "TELLME", "ELSE", "STRING", "'\\n'", "'\\t'", "'('", "')'", "$accept",
   "program", "stmt", "neststmt", "logiceq", "expr", YY_NULLPTR
 };
 #endif
@@ -505,14 +518,14 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,    10,    40,    41,     9
+     265,    10,     9,    40,    41
 };
 # endif
 
-#define YYPACT_NINF -33
+#define YYPACT_NINF -23
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-33)))
+  (!!((Yystate) == (-23)))
 
 #define YYTABLE_NINF -1
 
@@ -523,12 +536,11 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -33,     3,   -33,    -5,   -33,   -10,    25,   -33,     7,    38,
-      10,    25,   -33,    26,    21,    25,    25,    36,    33,    28,
-     -33,    13,    31,    31,   -33,   -33,    37,    43,    39,    41,
-      42,   -33,    20,    25,    44,    40,    45,    35,    29,    46,
-      13,   -33,   -33,    47,    13,    48,   -33,   -33,    50,    52,
-      51,    13,   -33
+     -23,     2,   -23,    -3,   -23,    -9,   -23,    24,   -23,   -23,
+      -2,    35,    24,    24,   -23,    18,    13,    24,    24,    -4,
+      25,   -23,    16,   -23,     3,   -23,    20,    26,    22,   -23,
+      30,    27,    31,    32,    34,    16,    16,    36,    37,   -23,
+      16,   -23
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -536,24 +548,23 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       3,     0,     1,    14,    13,     0,     0,     2,     0,     0,
-       0,     0,    14,     0,     0,     0,     0,     0,     0,     0,
-      16,     0,    15,    12,     6,     4,     0,    14,     0,     0,
-       0,     5,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     9,     8,     0,     0,     0,    10,     7,     0,     0,
-       0,     0,    11
+       3,     0,     1,    11,    10,     0,    12,     0,     2,     4,
+       0,     0,     0,     0,    11,     0,     0,     0,     0,     0,
+       0,    14,     0,    13,     9,     6,     0,     0,     0,     7,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     5,
+       0,     8
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -33,   -33,   -33,   -32,    56,    -6
+     -23,   -23,   -23,   -22,    45,     4
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     7,    29,    30,     9
+      -1,     1,     8,     9,    28,    11
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -561,50 +572,45 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      13,    10,    11,     2,    18,    19,     3,     4,    45,    22,
-      23,     5,    47,    12,     4,     6,    27,     4,    14,    52,
-      17,    28,     6,    12,     4,     6,    37,    38,    12,     4,
-      36,    15,     6,    15,    15,    21,    15,     6,    15,    20,
-      15,    26,    43,    15,    25,    16,    42,    24,    31,    32,
-      34,    33,     0,    35,    40,    39,    41,     8,    46,    49,
-      44,     0,    48,    50,     0,    51
+      27,    17,     2,    12,    13,     3,     4,    25,    17,    16,
+       5,    15,     6,    38,    39,     7,    19,    20,    41,     3,
+       4,    23,    24,    17,     5,    22,     6,    14,     4,     7,
+      17,    29,    21,    32,     6,    30,    34,     7,    31,    26,
+      17,    33,    18,    35,    36,    37,    10,     0,    40,    31
 };
 
 static const yytype_int8 yycheck[] =
 {
-       6,     6,    12,     0,    10,    11,     3,     4,    40,    15,
-      16,     8,    44,     3,     4,    12,     3,     4,    11,    51,
-      10,     8,    12,     3,     4,    12,    32,    33,     3,     4,
-      10,     5,    12,     5,     5,    14,     5,    12,     5,    13,
-       5,    13,    13,     5,    11,     7,    11,    11,    11,     6,
-       9,    12,    -1,    11,    14,    11,    11,     1,    11,     9,
-      14,    -1,    14,    11,    -1,    14
+      22,     5,     0,     6,    13,     3,     4,    11,     5,    11,
+       8,     7,    10,    35,    36,    13,    12,    13,    40,     3,
+       4,    17,    18,     5,     8,    12,    10,     3,     4,    13,
+       5,    11,    14,    11,    10,     9,     9,    13,    12,    14,
+       5,    11,     7,    12,    12,    11,     1,    -1,    12,    12
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    16,     0,     3,     4,     8,    12,    17,    19,    20,
-       6,    12,     3,    20,    11,     5,     7,    10,    20,    20,
-      13,    14,    20,    20,    11,    11,    13,     3,     8,    18,
-      19,    11,     6,    12,     9,    11,    10,    20,    20,    11,
-      14,    11,    11,    13,    14,    18,    11,    18,    14,     9,
-      11,    14,    18
+       0,    16,     0,     3,     4,     8,    10,    13,    17,    18,
+      19,    20,     6,    13,     3,    20,    11,     5,     7,    20,
+      20,    14,    12,    20,    20,    11,    14,    18,    19,    11,
+       9,    12,    11,    11,     9,    12,    12,    11,    18,    18,
+      12,    18
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    15,    16,    16,    17,    17,    17,    17,    18,    18,
-      18,    18,    19,    20,    20,    20,    20
+       0,    15,    16,    16,    17,    17,    18,    18,    18,    19,
+      20,    20,    20,    20,    20
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     0,     4,     5,     4,     8,     4,     4,
-       5,     9,     3,     1,     1,     3,     3
+       0,     2,     2,     0,     1,     8,     4,     5,     9,     3,
+       1,     1,     1,     3,     3
 };
 
 
@@ -1281,128 +1287,117 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 64 "yacc-progetto.y" /* yacc.c:1646  */
-    {}
-#line 1287 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 3:
-#line 65 "yacc-progetto.y" /* yacc.c:1646  */
+#line 81 "yacc-progetto.y" /* yacc.c:1646  */
     {}
 #line 1293 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 3:
+#line 82 "yacc-progetto.y" /* yacc.c:1646  */
+    {}
+#line 1299 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 4:
-#line 68 "yacc-progetto.y" /* yacc.c:1646  */
+#line 85 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		updateSymbolTable((yyvsp[-3].lexeme),(yyvsp[-1].value),NULL);
+			pleaseDo((yyvsp[0].opaction));
 		}
-#line 1301 "y.tab.c" /* yacc.c:1646  */
+#line 1307 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 71 "yacc-progetto.y" /* yacc.c:1646  */
+#line 88 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		printf("%d\n",(yyvsp[-2].value));
-		}
-#line 1309 "y.tab.c" /* yacc.c:1646  */
+			executeIf((yyvsp[-7].value),(yyvsp[-4].opaction),(yyvsp[0].opaction));
+			}
+#line 1315 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 74 "yacc-progetto.y" /* yacc.c:1646  */
-    {
-		updateSymbolTable((yyvsp[-3].lexeme),NULL,(yyvsp[-1].op));
+#line 93 "yacc-progetto.y" /* yacc.c:1646  */
+    { 
+			(yyval.opaction) = assignment((yyvsp[-3].lexeme), (yyvsp[-1].expression));
 		}
-#line 1317 "y.tab.c" /* yacc.c:1646  */
+#line 1323 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 77 "yacc-progetto.y" /* yacc.c:1646  */
+#line 96 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		executeIf((yyvsp[-7].value),(yyvsp[-4].opaction),(yyvsp[0].opaction));
-		}
-#line 1325 "y.tab.c" /* yacc.c:1646  */
+			(yyval.opaction) = telling((yyvsp[-2].expression));
+			}
+#line 1331 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 82 "yacc-progetto.y" /* yacc.c:1646  */
-    { 
-		(yyval.opaction) = assignment((yyvsp[-3].lexeme), (yyvsp[-1].value));
+#line 99 "yacc-progetto.y" /* yacc.c:1646  */
+    {
+			if((yyvsp[-8].value) == 1){
+				(yyval.opaction) = (yyvsp[-5].opaction);
+			} else {
+				(yyval.opaction) = (yyvsp[0].opaction);		
+			}
 		}
-#line 1333 "y.tab.c" /* yacc.c:1646  */
+#line 1343 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 85 "yacc-progetto.y" /* yacc.c:1646  */
+#line 108 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		printf("\nFOUND A STRING! \n%s \n", (yyvsp[-1].op));
-		(yyval.opaction) = stringAssignment((yyvsp[-3].lexeme),(yyvsp[-1].op));
+			if(strcmp((yyvsp[-2].expression)->dataType, "INTEGER") == 0 && strcmp((yyvsp[0].expression)->dataType, "INTEGER") == 0){
+				(yyval.value) = computeLogicOperation((yyvsp[-2].expression),(yyvsp[-1].op),(yyvsp[0].expression));
+			} else {
+				//Output error, logic operation allowed only between integers
+				yyerror ("Type error: logical operation allowed only using format: INTEGER logicOperator INTEGER");
+				exit(0);
+			}
 		}
-#line 1342 "y.tab.c" /* yacc.c:1646  */
+#line 1357 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 89 "yacc-progetto.y" /* yacc.c:1646  */
-    {
-		(yyval.opaction) = telling((yyvsp[-2].value));
-		}
-#line 1350 "y.tab.c" /* yacc.c:1646  */
+#line 119 "yacc-progetto.y" /* yacc.c:1646  */
+    { 
+			(yyval.expression) = createExpression("INTEGER", (yyvsp[0].value), NULL);
+			}
+#line 1365 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 92 "yacc-progetto.y" /* yacc.c:1646  */
-    {
-		if((yyvsp[-8].value) == 1){
-			(yyval.opaction) = (yyvsp[-5].opaction);
-		} else {
-			(yyval.opaction) = (yyvsp[0].opaction);		
-		}
-		}
-#line 1362 "y.tab.c" /* yacc.c:1646  */
+#line 122 "yacc-progetto.y" /* yacc.c:1646  */
+    { 
+			(yyval.expression) = getVarValue((yyvsp[0].lexeme));
+			}
+#line 1373 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 101 "yacc-progetto.y" /* yacc.c:1646  */
+#line 125 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		(yyval.value) = computeLogicOperation((yyvsp[-2].value),(yyvsp[-1].op),(yyvsp[0].value));
-		}
-#line 1370 "y.tab.c" /* yacc.c:1646  */
+			(yyval.expression) = createExpression("STRING", 0, extractString((yyvsp[0].op)));
+			}
+#line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 108 "yacc-progetto.y" /* yacc.c:1646  */
-    { 
-		(yyval.value) = (yyvsp[0].value);
-		}
-#line 1378 "y.tab.c" /* yacc.c:1646  */
+#line 128 "yacc-progetto.y" /* yacc.c:1646  */
+    {
+			(yyval.expression) = computeOperation((yyvsp[-2].expression),(yyvsp[-1].op),(yyvsp[0].expression));
+			}
+#line 1389 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 111 "yacc-progetto.y" /* yacc.c:1646  */
-    { 
-		(yyval.value) = getVarValue((yyvsp[0].lexeme));
-		}
-#line 1386 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 15:
-#line 114 "yacc-progetto.y" /* yacc.c:1646  */
+#line 131 "yacc-progetto.y" /* yacc.c:1646  */
     {
-		(yyval.value) = computeOperation((yyvsp[-2].value),(yyvsp[-1].op),(yyvsp[0].value));
-		}
-#line 1394 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 16:
-#line 117 "yacc-progetto.y" /* yacc.c:1646  */
-    {
-		(yyval.value) = (yyvsp[-1].value);
-		}
-#line 1402 "y.tab.c" /* yacc.c:1646  */
+			(yyval.expression) = (yyvsp[-1].expression);
+			}
+#line 1397 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1406 "y.tab.c" /* yacc.c:1646  */
+#line 1401 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1630,27 +1625,46 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 123 "yacc-progetto.y" /* yacc.c:1906  */
+#line 136 "yacc-progetto.y" /* yacc.c:1906  */
 
 
-
-int getVarValue(char * var){
+//Get the value and dataType of a variable
+data * getVarValue(char * var){
 
 	symb * current = head;
-	char * result;
+	data * result = NULL;
+	result = malloc(sizeof(data));
+	
 	while (current != NULL && (strcmp(current->var,var) != 0)) {
 		current = current->next;
 	}
-	if(current->val == NULL){
-		result = strdup(current->str);
+	if(current->str == NULL){
+		result->dataType = "INTEGER";
+		result->intVal = current->val;
 	} else {
-		result = current->val;
+		result->dataType = "STRING";
+		result->strVal = strdup(current->str);
 	}
 	
 	return result;
 }
 
+//Create data and assign type
+data * createExpression(char * dataType, int intVal, char * strVal){
 
+	data * theExpression = NULL;
+	theExpression = malloc(sizeof(data));
+	theExpression->dataType = strdup(dataType);
+	if(strcmp(dataType, "INTEGER") == 0){
+		theExpression->intVal = intVal;
+	} else if(strcmp(dataType, "STRING") == 0){
+		theExpression->strVal = strdup(strVal);
+	}
+
+	return theExpression;
+}
+
+//Select action to execute after logical operation
 void executeIf(int logicOp, act *val1, act *val2){
 	
 	if(logicOp == 1){
@@ -1660,53 +1674,71 @@ void executeIf(int logicOp, act *val1, act *val2){
 	}
 }
 
+//Execute action
 void pleaseDo(act *anAction){
 
 	if(strcmp(anAction->action, "telling") == 0){
 		printf("%d\n", anAction->val2);
 	} else if(strcmp(anAction->action, "assign") == 0){
-		updateSymbolTable(anAction->val1,anAction->val2, NULL);
+		updateSymbolTable(anAction->val1, anAction->val2, NULL);
 	} else if(strcmp(anAction->action, "assignStr") == 0){
-		updateSymbolTable(anAction->val1, NULL, anAction->strVal);
+		updateSymbolTable(anAction->val1, 0, anAction->strVal);
+	} else if(strcmp(anAction->action, "tellingStr") == 0){
+		printf("%s\n", anAction->strVal);
 	}
 }
 
-act * telling(int val){
-	
+//Create print action
+act * telling(data *val){
+	 	
 	act * theAction = NULL;
 	theAction = malloc(sizeof(act));
-	theAction->action = "telling";
-	theAction->val2 = val;
-
-	return theAction;
 	
+	if(strcmp(val->dataType, "INTEGER") == 0 ){
+		theAction->action = "telling";
+		theAction->val2 = val->intVal;
+	} else if(strcmp(val->dataType, "STRING") == 0 ){
+		theAction->action = "tellingStr";
+		theAction->strVal = val->strVal;	
+	}
+	
+	return theAction;	
 }
 
-act * assignment(char * val1, int val2){
-
+//Create assignment action
+act * assignment(char * val1, data *val2){
 
 	act * theAction = malloc(sizeof(act));
-	theAction->action = "assign";
-	theAction->val1 = strdup(val1);
-	theAction->val2 = val2;
-	theAction->strVal = NULL;
+	
+	if(strcmp(val2->dataType, "INTEGER") == 0){
+	
+		theAction->action = "assign";
+		theAction->val1 = strdup(val1);
+		theAction->val2 = val2->intVal;
+		theAction->strVal = NULL;
+
+	} else if(strcmp(val2->dataType, "STRING") == 0){
+	
+		theAction->action = "assignStr";
+		theAction->val1 = strdup(val1);
+		theAction->strVal = strdup(val2->strVal);
+	
+	}
 
 	return theAction;
-
 }
 
-act * stringAssignment(char * val1, char *str){
+//Extract actual string from token STRING
+char * extractString(char *originalString){
 
-
-	act * theAction = malloc(sizeof(act));
-	theAction->action = "assignStr";
-	theAction->val1 = strdup(val1);
-	theAction->strVal = strdup(str);
-
-	return theAction;
-
+	char *newStr = strdup(originalString); 
+	newStr++;
+	newStr[strlen(newStr)-1] = 0;
+	
+	return newStr;
 }
 
+//Update symbol table or insert new symbol
 void updateSymbolTable(char * var, int val, char * str) {
 
 	//If we are inserting an integer
@@ -1740,66 +1772,79 @@ void updateSymbolTable(char * var, int val, char * str) {
 		// If var does not exist add a new value
 			current->next = malloc(sizeof(symb));
 			current->next->var = var;
-			current->next->val = NULL;
 			current->next->str = strdup(str);
 			current->next->next = NULL;
 		}
 	}
 }
 
-
-int computeOperation(int val1, char *op, int val2){
+//Compute operation between integers or strings
+data * computeOperation(data *val1, char *op, data *val2){
+	
+	data * result = NULL;
+	result = malloc(sizeof(data));
 	 	
-	int result;
+	if(strcmp(val1->dataType, "INTEGER") == 0 && strcmp(val2->dataType, "INTEGER") == 0){
+	 	
+		result->dataType = "INTEGER";
+		
+		if(strcmp(op, "sum") == 0){
+			result->intVal = (val1->intVal + val2->intVal);
+		} else if(strcmp(op, "sub") == 0){
+			result->intVal = (val1->intVal - val2->intVal);
+		} else if(strcmp(op, "div") == 0){
+			result->intVal = (val1->intVal / val2->intVal);
+		} else if(strcmp(op, "prod") == 0){
+			result->intVal = (val1->intVal * val2->intVal);
+		} else {
+			//wrong operation between integers
+			yyerror ("Type error: only operation allowed between integer: INTEGET sum|sub|prod|div INTEGER");
+			exit(0);
+		}
+	} else if(strcmp(val1->dataType, "STRING") == 0 && strcmp(val2->dataType, "STRING") == 0){
 
-	if(strcmp(op, "sum") == 0){
-		result = (val1 + val2);
-	} else if(strcmp(op, "sub") == 0){
-		result = (val1 - val2);
-	} else if(strcmp(op, "div") == 0){
-		result = (val1 / val2);
-	} else if(strcmp(op, "prod") == 0){
-		result = (val1 * val2);
-	} else {
-		result = 99;
+		result->dataType = "STRING";
+
+		if(strcmp(op, "concat") == 0){
+				result->strVal = strcat(val1->strVal, val2->strVal);
+		} else {
+			//wrong operation between Strings
+			yyerror ("Type error: only operation allowed between string: STRING concat STRING");
+			exit(0);
+		}
+	} else {	
+		//operations between integers and strings
+		yyerror ("Type error: operations between INTEGERS and STRINGS are not allowed");
+		exit(0);
 	}
+	
 	return result;
 }
 
-int computeLogicOperation(int val1, char *logic, int val2){
+//Compute logical operation and return 0 if false, 1 if true
+int computeLogicOperation(data *val1, char *logic, data *val2){
 	 
 	int result = 0;
-
-	if(strcmp(logic, "eq") == 0){
-		if(val1 == val2){
-			result = 1;
-		}		
-	}else if(strcmp(logic, "lt") == 0){
-		if(val1 < val2){
-			result = 1;
-		}		
-	}else if(strcmp(logic, "gt") == 0){
-		if(val1 > val2){
-			result = 1;
+	 	
+	if(strcmp(val1->dataType, "INTEGER") == 0 && strcmp(val2->dataType, "INTEGER") == 0){
+	
+		if(strcmp(logic, "eq") == 0){
+			if(val1->intVal == val2->intVal){
+				result = 1;
+			}		
+		}else if(strcmp(logic, "lt") == 0){
+			if(val1->intVal < val2->intVal){
+				result = 1;
+			}		
+		}else if(strcmp(logic, "gt") == 0){
+			if(val1->intVal > val2->intVal){
+				result = 1;
+			}
 		}
-	}		
+	}
+	
 	return result;
 }
-
-int stringToIntParser(char *input){
-	
-	// parsing with error handling
-	char *end;
-	int i = strtol(input, &end, 10);
-	i = strtol(input, &end, 10);
-	input = end;
-	if (errno == ERANGE){
-	    printf("range error, got ");
-	    errno = 0;
-	}
-	return i;
-}
-
 
 
 int main (void) {
@@ -1823,4 +1868,4 @@ int main (void) {
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
 
 #include "lex.yy.c"
-
+	

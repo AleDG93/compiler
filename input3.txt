@@ -1,4 +1,0 @@
-3 gt 2
-	tellMe(5)
-else
-	tellMe(9)

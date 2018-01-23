@@ -1,3 +1,8 @@
 ab <- 'Questa e una stringa'
 cd <- 3
-tellMe(ab)
+ef <- 9
+hg <- 'ABC con' concat 'cat EFG'
+cd sum ef eq 12
+	tellMe(hg)
+else
+	tellMe(ab)

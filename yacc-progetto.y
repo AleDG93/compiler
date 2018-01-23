@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
+
 void yyerror (char *s);
 
+//Symbol table structure
 typedef struct symbol_table {
 
     char * var;
@@ -13,26 +14,37 @@ typedef struct symbol_table {
     struct symbol_table * next;
 } symb;
 
+//Action structure
 typedef struct actions {
 
     char * action;
-    int val1;
+    char * val1;
     int val2;
     char *strVal;
 } act;
 
+//Data structure
+typedef struct expressions {
+
+	char * dataType;
+	int intVal;
+	char * strVal;	
+
+} data;
+
+
 symb * head = NULL;
 
-int getVarValue(char* var);
-void updateSymbolVal(char * var, int val);
-int computeOperation(int val1, char *op, int val2);
-int computeLogicOperation(int val1, char *op, int val2);
+data * getVarValue(char* var);
+void updateSymbolTable(char * var, int val, char * str);
+data * computeOperation(data *val1, char *op, data *val2);
+int computeLogicOperation(data *val1, char *op, data *val2);
 void pleaseDo(act *action);
 void executeIf(int logicOp, act *val1, act *val2);
-int stringToIntParser(char *input);
-act * telling(int val);
-act * assignment(char * val1, int val2);
-act * stringAssignment(char * val1, char * str);
+act * telling(data *val);
+act * assignment(char * val1, data *val2);
+data * createExpression(char * dataType, int intVal, char * strVal);
+char * extractString(char *originalString);
 
 %}
 
@@ -42,6 +54,7 @@ act * stringAssignment(char * val1, char * str);
 	char *op;
 	act *opaction;
 	symb *symbol;
+	data *expression;
 }
 
 %token <lexeme> ID
@@ -54,92 +67,111 @@ act * stringAssignment(char * val1, char * str);
 %token STRING
 
 %type <op> OP LOGIC STRING 
-%type <value> logiceq expr
+%type <value> logiceq
 %type <opaction> neststmt
+%type <expression> expr
+
+//Solve conflict between doing OP or reducing EXPR to VALUE
+%left VALUE
+%left OP
 
 %start program
 
-
 %%
 program: program stmt {}
-	|	{}
-	;
+		|	{}
+		;
 	
-stmt: 	ID ASSIGN expr	'\n' {
-		updateSymbolTable($1,$3,NULL);
+stmt: 	neststmt	{
+			pleaseDo($1);
 		}
-		| TELLME '(' expr ')' '\n' {
-		printf("%d\n",$3);
-		}
-	|ID ASSIGN STRING '\n' {
-		updateSymbolTable($1,NULL,$3);
-		}
-	| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt {
-		executeIf($1,$4,$8);
-		}
-	;
+		| logiceq '\n' '\t' neststmt ELSE '\n' '\t' neststmt {
+			executeIf($1,$4,$8);
+			}
+		;
 
 neststmt:ID ASSIGN expr	'\n' { 
-		$$ = assignment($1, $3);
+			$$ = assignment($1, $3);
 		}
-	|ID ASSIGN STRING '\n' {
-		printf("\nFOUND A STRING! \n%s \n", $3);
-		$$ = stringAssignment($1,$3);
-		}
-	| TELLME '(' expr ')' '\n' {
-		$$ = telling($3);
-		}
-	| logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt {
-		if($1 == 1){
-			$$ = $4;
-		} else {
-			$$ = $9;		
-		}
+		| TELLME '(' expr ')' '\n' {
+			$$ = telling($3);
+			}
+		| logiceq '\n' '\t' neststmt '\t' ELSE '\n' '\t' neststmt {
+			if($1 == 1){
+				$$ = $4;
+			} else {
+				$$ = $9;		
+			}
 		}
 	;
 
 logiceq: expr LOGIC expr {
-		$$ = computeLogicOperation($1,$2,$3);
+			if(strcmp($1->dataType, "INTEGER") == 0 && strcmp($3->dataType, "INTEGER") == 0){
+				$$ = computeLogicOperation($1,$2,$3);
+			} else {
+				//Output error, logic operation allowed only between integers
+				yyerror ("Type error: logical operation allowed only using format: INTEGER logicOperator INTEGER");
+				exit(0);
+			}
 		}
-	;
-
-
+		;
 
 expr:	VALUE 	{ 
-		$$ = $1;
-		}
-	| ID	{ 
-		$$ = getVarValue($1);
-		}
-	| expr OP expr	{
-		$$ = computeOperation($1,$2,$3);
-		}
-	| '(' expr ')'	{
-		$$ = $2;
-		}
-	;
-
-
+			$$ = createExpression("INTEGER", $1, NULL);
+			}
+		| ID	{ 
+			$$ = getVarValue($1);
+			}
+		| STRING	{
+			$$ = createExpression("STRING", 0, extractString($1));
+			}
+		| expr OP expr	{
+			$$ = computeOperation($1,$2,$3);
+			}
+		| '(' expr ')'	{
+			$$ = $2;
+			}
+		;
+		
 %%
 
-
-int getVarValue(char * var){
+//Get the value and dataType of a variable
+data * getVarValue(char * var){
 
 	symb * current = head;
-	char * result;
+	data * result = NULL;
+	result = malloc(sizeof(data));
+	
 	while (current != NULL && (strcmp(current->var,var) != 0)) {
 		current = current->next;
 	}
-	if(current->val == NULL){
-		result = strdup(current->str);
+	if(current->str == NULL){
+		result->dataType = "INTEGER";
+		result->intVal = current->val;
 	} else {
-		result = current->val;
+		result->dataType = "STRING";
+		result->strVal = strdup(current->str);
 	}
 	
 	return result;
 }
 
+//Create data and assign type
+data * createExpression(char * dataType, int intVal, char * strVal){
 
+	data * theExpression = NULL;
+	theExpression = malloc(sizeof(data));
+	theExpression->dataType = strdup(dataType);
+	if(strcmp(dataType, "INTEGER") == 0){
+		theExpression->intVal = intVal;
+	} else if(strcmp(dataType, "STRING") == 0){
+		theExpression->strVal = strdup(strVal);
+	}
+
+	return theExpression;
+}
+
+//Select action to execute after logical operation
 void executeIf(int logicOp, act *val1, act *val2){
 	
 	if(logicOp == 1){
@@ -149,53 +181,71 @@ void executeIf(int logicOp, act *val1, act *val2){
 	}
 }
 
+//Execute action
 void pleaseDo(act *anAction){
 
 	if(strcmp(anAction->action, "telling") == 0){
 		printf("%d\n", anAction->val2);
 	} else if(strcmp(anAction->action, "assign") == 0){
-		updateSymbolTable(anAction->val1,anAction->val2, NULL);
+		updateSymbolTable(anAction->val1, anAction->val2, NULL);
 	} else if(strcmp(anAction->action, "assignStr") == 0){
-		updateSymbolTable(anAction->val1, NULL, anAction->strVal);
+		updateSymbolTable(anAction->val1, 0, anAction->strVal);
+	} else if(strcmp(anAction->action, "tellingStr") == 0){
+		printf("%s\n", anAction->strVal);
 	}
 }
 
-act * telling(int val){
-	
+//Create print action
+act * telling(data *val){
+	 	
 	act * theAction = NULL;
 	theAction = malloc(sizeof(act));
-	theAction->action = "telling";
-	theAction->val2 = val;
-
-	return theAction;
 	
+	if(strcmp(val->dataType, "INTEGER") == 0 ){
+		theAction->action = "telling";
+		theAction->val2 = val->intVal;
+	} else if(strcmp(val->dataType, "STRING") == 0 ){
+		theAction->action = "tellingStr";
+		theAction->strVal = val->strVal;	
+	}
+	
+	return theAction;	
 }
 
-act * assignment(char * val1, int val2){
-
+//Create assignment action
+act * assignment(char * val1, data *val2){
 
 	act * theAction = malloc(sizeof(act));
-	theAction->action = "assign";
-	theAction->val1 = strdup(val1);
-	theAction->val2 = val2;
-	theAction->strVal = NULL;
+	
+	if(strcmp(val2->dataType, "INTEGER") == 0){
+	
+		theAction->action = "assign";
+		theAction->val1 = strdup(val1);
+		theAction->val2 = val2->intVal;
+		theAction->strVal = NULL;
+
+	} else if(strcmp(val2->dataType, "STRING") == 0){
+	
+		theAction->action = "assignStr";
+		theAction->val1 = strdup(val1);
+		theAction->strVal = strdup(val2->strVal);
+	
+	}
 
 	return theAction;
-
 }
 
-act * stringAssignment(char * val1, char *str){
+//Extract actual string from token STRING
+char * extractString(char *originalString){
 
-
-	act * theAction = malloc(sizeof(act));
-	theAction->action = "assignStr";
-	theAction->val1 = strdup(val1);
-	theAction->strVal = strdup(str);
-
-	return theAction;
-
+	char *newStr = strdup(originalString); 
+	newStr++;
+	newStr[strlen(newStr)-1] = 0;
+	
+	return newStr;
 }
 
+//Update symbol table or insert new symbol
 void updateSymbolTable(char * var, int val, char * str) {
 
 	//If we are inserting an integer
@@ -229,66 +279,79 @@ void updateSymbolTable(char * var, int val, char * str) {
 		// If var does not exist add a new value
 			current->next = malloc(sizeof(symb));
 			current->next->var = var;
-			current->next->val = NULL;
 			current->next->str = strdup(str);
 			current->next->next = NULL;
 		}
 	}
 }
 
-
-int computeOperation(int val1, char *op, int val2){
+//Compute operation between integers or strings
+data * computeOperation(data *val1, char *op, data *val2){
+	
+	data * result = NULL;
+	result = malloc(sizeof(data));
 	 	
-	int result;
+	if(strcmp(val1->dataType, "INTEGER") == 0 && strcmp(val2->dataType, "INTEGER") == 0){
+	 	
+		result->dataType = "INTEGER";
+		
+		if(strcmp(op, "sum") == 0){
+			result->intVal = (val1->intVal + val2->intVal);
+		} else if(strcmp(op, "sub") == 0){
+			result->intVal = (val1->intVal - val2->intVal);
+		} else if(strcmp(op, "div") == 0){
+			result->intVal = (val1->intVal / val2->intVal);
+		} else if(strcmp(op, "prod") == 0){
+			result->intVal = (val1->intVal * val2->intVal);
+		} else {
+			//wrong operation between integers
+			yyerror ("Type error: only operation allowed between integer: INTEGET sum|sub|prod|div INTEGER");
+			exit(0);
+		}
+	} else if(strcmp(val1->dataType, "STRING") == 0 && strcmp(val2->dataType, "STRING") == 0){
 
-	if(strcmp(op, "sum") == 0){
-		result = (val1 + val2);
-	} else if(strcmp(op, "sub") == 0){
-		result = (val1 - val2);
-	} else if(strcmp(op, "div") == 0){
-		result = (val1 / val2);
-	} else if(strcmp(op, "prod") == 0){
-		result = (val1 * val2);
-	} else {
-		result = 99;
+		result->dataType = "STRING";
+
+		if(strcmp(op, "concat") == 0){
+				result->strVal = strcat(val1->strVal, val2->strVal);
+		} else {
+			//wrong operation between Strings
+			yyerror ("Type error: only operation allowed between string: STRING concat STRING");
+			exit(0);
+		}
+	} else {	
+		//operations between integers and strings
+		yyerror ("Type error: operations between INTEGERS and STRINGS are not allowed");
+		exit(0);
 	}
+	
 	return result;
 }
 
-int computeLogicOperation(int val1, char *logic, int val2){
+//Compute logical operation and return 0 if false, 1 if true
+int computeLogicOperation(data *val1, char *logic, data *val2){
 	 
 	int result = 0;
-
-	if(strcmp(logic, "eq") == 0){
-		if(val1 == val2){
-			result = 1;
-		}		
-	}else if(strcmp(logic, "lt") == 0){
-		if(val1 < val2){
-			result = 1;
-		}		
-	}else if(strcmp(logic, "gt") == 0){
-		if(val1 > val2){
-			result = 1;
+	 	
+	if(strcmp(val1->dataType, "INTEGER") == 0 && strcmp(val2->dataType, "INTEGER") == 0){
+	
+		if(strcmp(logic, "eq") == 0){
+			if(val1->intVal == val2->intVal){
+				result = 1;
+			}		
+		}else if(strcmp(logic, "lt") == 0){
+			if(val1->intVal < val2->intVal){
+				result = 1;
+			}		
+		}else if(strcmp(logic, "gt") == 0){
+			if(val1->intVal > val2->intVal){
+				result = 1;
+			}
 		}
-	}		
+	}
+	
 	return result;
 }
-
-int stringToIntParser(char *input){
-	
-	// parsing with error handling
-	char *end;
-	int i = strtol(input, &end, 10);
-	i = strtol(input, &end, 10);
-	input = end;
-	if (errno == ERANGE){
-	    printf("range error, got ");
-	    errno = 0;
-	}
-	return i;
-}
-
 
 
 int main (void) {
@@ -312,4 +375,4 @@ int main (void) {
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);} 
 
 #include "lex.yy.c"
-
+	
