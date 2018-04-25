@@ -1,10 +1,5 @@
-Group members:
-Alessandro Dal Gobbo	(Nr. 13626)
-Alessandro Paulmichl	(Nr. 14637)
-Marco Brillo 		(Nr. 12500)
-
 Syntax description:
-Our language allows to have integers and strings, they are assigned to variables using an arrow and simply writing the number for integers, 
+The language allows to have integers and strings, they are assigned to variables using an arrow and simply writing the number for integers, 
 while using single quotes for strings. Other operations allowed are logical operations and mathematical operations. Parenthesis are also acepted.
 Each statement ends when a new line is found, in case of logical operation statement are divided by tabs.
 
